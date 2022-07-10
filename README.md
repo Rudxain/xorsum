@@ -13,13 +13,13 @@ Currently, there's no support for Standard-Input, but it'll be added in the futu
 # Usage
 ```sh
 cargo install xorsum
-xorsum "$FILE" #hash the same (or other) file
+xorsum [FILE] ##path to file you want to hash
 ```
 
 If you want to build & run from source:
 ```sh
-cd "$REPO" #path to cloned/downloaded repo
-cargo run -- "$FILE" #path to file you want to hash
+cd [REPO] #path to cloned/downloaded repo
+cargo run -- [FILE]
 ```
 
 # Examples
