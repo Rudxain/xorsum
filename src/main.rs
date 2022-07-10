@@ -7,9 +7,8 @@ const VERSION: &str = "1.0.0";
 const HELP_CMD: [&str; 2] = ["-h", "--help"];
 const VER_CMD: [&str; 2] = ["-v", "--version"];
 const BRIEF_CMD: [&str; 2] = ["-b", "--brief"];
-const LOWER_CMD: [&str; 2] = ["-c", "--lower"];
-const UPPER_CMD: [&str; 2] = ["-C", "--UPPER"];
-
+const LOWER_CMD: [&str; 2] = ["-a", "--lower"];
+const UPPER_CMD: [&str; 2] = ["-A", "--UPPER"];
 
 fn main() -> Result<()> {
 	let args: Vec<String> = std::env::args().collect();
