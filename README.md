@@ -16,10 +16,11 @@ cd "$DIR" #directory where exec is contained
 ./xorsum "$FILE" #hash the same (or other) file
 ```
 
-Example output:
+Output of `cargo run -- Cargo.toml`:
+```sh
+[00, 33, 3D, 24, 40, 6A, 50, 0A, 5C, 4B, 63, 1F, 68, 1D, 09, 45]
 ```
-[ 00, ff, 7f, 80, 69, 42, be, ef, aa, 55, 77, 86, 96, 01, 10, 88 ]
-```
+
 # ⚠ DISCLAIMER ⚠
 **DO NOT USE FOR CRYPTOGRAPHIC PURPOSES**
 
