@@ -4,7 +4,7 @@ This program computes a hash by using an algorithm based on the [XOR-cipher](htt
 Currently, there's no support for Standard-Input, but it'll be added in the future. More flags and args will also be available later.
 
 # Usage
-You need [`cargo`](https://doc.rust-lang.org/stable/cargo/getting-started/installation.html) to build this crate
+(Note: You need [`cargo`](https://doc.rust-lang.org/stable/cargo/getting-started/installation.html) to build this crate)
 
 Clone/download the repo, then build & run from source:
 ```sh
