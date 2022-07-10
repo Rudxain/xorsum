@@ -11,21 +11,15 @@ I'm still trying to fix the formatting of the output to be a single sequence of 
 Currently, there's no support for Standard-Input, but it'll be added in the future. More flags and args will also be available later.
 
 # Usage
-Install crate:
 ```sh
 cargo install xorsum
+xorsum "$FILE" #hash the same (or other) file
 ```
 
 If you want to build & run from source:
 ```sh
 cd "$REPO" #path to cloned/downloaded repo
 cargo run -- "$FILE" #path to file you want to hash
-```
-
-If you have the compiled executable, do:
-```sh
-cd "$DIR" #directory where exec is contained, usually "target"
-./xorsum "$FILE" #hash the same (or other) file
 ```
 
 # Examples
