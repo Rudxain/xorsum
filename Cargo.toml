@@ -3,6 +3,8 @@ name = "xorsum"
 version = "0.0.0"
 edition = "2021"
 description = "Get XOR hash/digest of a file with this command-line utility"
+license = "Unlicense"
+license-file = "LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
