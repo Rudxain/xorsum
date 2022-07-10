@@ -20,6 +20,7 @@ Output of `cargo run -- Cargo.toml`:
 ```sh
 [00, 33, 3D, 24, 40, 6A, 50, 0A, 5C, 4B, 63, 1F, 68, 1D, 09, 45]
 ```
+
 # ⚠ DISCLAIMER ⚠
 **DO NOT USE FOR CRYPTOGRAPHIC PURPOSES**
 
