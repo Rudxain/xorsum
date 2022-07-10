@@ -12,11 +12,11 @@ cargo run -- "$FILE" #path to file you want to hash
 
 If you already compiled the executable, do:
 ```sh
-cd "$DIR" #directory where exec is contained
+cd "$DIR" #directory where exec is contained, usually "target"
 ./xorsum "$FILE" #hash the same (or other) file
 ```
 
-Output of `cargo run -- Cargo.toml`:
+Output of `xorsum Cargo.toml`:
 ```sh
 [00, 33, 3D, 24, 40, 6A, 50, 0A, 5C, 4B, 63, 1F, 68, 1D, 09, 45]
 ```
