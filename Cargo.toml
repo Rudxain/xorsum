@@ -1,7 +1,8 @@
 [package]
 name = "xorsum"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
+description = "Get XOR hash/digest of a file with this command-line utility"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
