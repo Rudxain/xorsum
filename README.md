@@ -34,9 +34,9 @@ If we write "aaaa" to this file and rehash it with `xorsum a -l 4`, the output w
 ```
 Because "61" is the hex value of UTF-8 char "a"
 
-Rehashing the file with `xorsum a` yields:
+Rehashing the file with `xorsum a -b` yields:
 ```
-[61, 61, 61, 61, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00] a
+[61, 61, 61, 61, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00]
 ```
 This is because the IV is all 0s, and the padding is 0 too.
 
