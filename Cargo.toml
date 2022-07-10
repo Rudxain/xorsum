@@ -7,7 +7,6 @@ keywords = ["checksum", "hash", "xor"]
 categories = ["command-line-utilities", "algorithms"]
 license = "Unlicense"
 repository = "https://github.com/Rudxain/xorsum"
-homepage = "https://github.com/Rudxain/xorsum"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
