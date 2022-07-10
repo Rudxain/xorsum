@@ -22,4 +22,5 @@ Example output:
 ```
 # ⚠ DISCLAIMER ⚠
 **DO NOT USE FOR CRYPTOGRAPHIC PURPOSES**
+
 The algorithm is **not** crypto-secure. It is intended to be a simple, basic, and fast checksum algorithm
