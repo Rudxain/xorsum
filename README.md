@@ -1,7 +1,7 @@
 # `xorsum`
 This program computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher). Basically, it splits the file in chunks whose byte-length is the same as the digest size (padding with 0s), and XORs all those chunks together into a new chunk of the same size, the resulting chunk is printed as an array of hexadecimal bytes. I'm still trying to fix the formatting of the output to be a single sequence of hex nibbles without delimiter.
 
-This is not a good hash function, because it doesn't have the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect). It is intended to be a simple/basic, educational, and fast checksum algorithm.
+This is not a good hash function, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit. It is intended to be a simple/basic, educational, and fast checksum algorithm.
 
 Currently, there's no support for Standard-Input, but it'll be added in the future. More flags and args will also be available later.
 
