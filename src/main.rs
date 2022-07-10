@@ -20,7 +20,9 @@ fn main() -> Result<()> {
 	let mut is_len = false;
 	let mut byte_len: usize = 0x10; //digest/hash size in Bytes
 
+	let mut first_iter = true;
 	for arg in &args {
+		if first_iter {first_iter = false; continue}
 		if is_len {
 			byte_len = arg.parse().unwrap();
 			is_len = false;
@@ -91,7 +93,6 @@ fn main() -> Result<()> {
 			}
 
 			sbox.fill(0);
-			assert_eq!(sbox, vec![0; byte_len]);
 		}
 	}
 
