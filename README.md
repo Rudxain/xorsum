@@ -1,15 +1,17 @@
 # `xorsum`
-This program computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher)
+This program computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher). Basically, it splits the file in chunks whose byte-length is the same as the digest size (padding with 0s), and XORs all those chunks together into a new chunk of the same size, the resulting chunk is printed as an array of hexadecimal bytes. I'm still trying to fix the formatting of the output to be a single sequence of hex nibbles without delimiter.
 
 # Usage
-Build & run from source:
+Clone/download the repo, then build & run from source:
 ```sh
-cargo run -- path_to_file
+cd "$REPO" #path to downloaded repo
+cargo run -- "$FILE" #path to file you want to hash
 ```
 
-Run native executable from working directory:
+If you already compiled the executable, do:
 ```sh
-./xorsum path_to_file
+cd "$DIR" #directory where exec is contained
+./xorsum "$FILE" #hash the same (or other) file
 ```
 
 Currently, there's no support for Standard-Input, but it'll be added in the future. More flags and args will also be available later
