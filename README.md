@@ -4,30 +4,45 @@ Computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikip
 This isn't a good hash function, it's only good for checksums, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit. It is intended to be a simple/basic, educational, and fast checksum algorithm.
 
 # Program
-The digest size is hardcoded to be 128bit, but it'll allow custom sizes in the future. The IV is hardcoded to be 0x0, it'll also allow custom values later.
+The digest size is 128bit by default, but can be set to any valid `usize` value with the `--len` option. The IV is hardcoded to be 0x0, it'll allow custom values in the future.
 
-The naming is based on Unix and GNU-coreutils naming conventions, like `cksum` and `md5sum`. The behavior of the program is also intended to be similar (but not identical) to those checksum programs.
+The naming is based on Unix and GNU-coreutils naming conventions, like [`cksum`](https://en.wikipedia.org/wiki/Cksum) and [`md5sum`](https://en.wikipedia.org/wiki/Md5sum). The behavior of the program is also intended to be similar (but not identical) to those checksum programs, with some inspiration from [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 I'm still trying to fix the formatting of the output to be a single sequence of hex nibbles without delimiter.
-
-Currently, there's no support for Standard-Input, but it'll be added in the future. More flags and args will also be available later.
 
 # Usage
 ```sh
 cargo install xorsum
-xorsum [FILE] ##path to file you want to hash
+xorsum [OPTION]... [FILE]...
 ```
 
-If you want to build & run from source:
+If you want to build from source:
 ```sh
 cd [REPO] #path to cloned/downloaded repo
-cargo run -- [FILE]
+cargo build --release
 ```
 
 # Examples
-Output of `xorsum Cargo.toml` (initial commit):
+Let's create an empty text file named `a`. The output of `xorsum --len 4 a` should be:
+```
+[00, 00, 00, 00] a
+```
+
+If we write "aaaa" to this file and rehash it with `xorsum a -l 4`, the output will be:
+```
+[61, 61, 61, 61] a
+```
+Because "61" is the hex value of UTF-8 char "a"
+
+Rehashing the file with `xorsum a` yields:
+```
+[61, 61, 61, 61, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00] a
+```
+This is because the IV is all 0s, and the padding is 0 too.
+
+For more info, run:
 ```sh
-[00, 33, 3D, 24, 40, 6A, 50, 0A, 5C, 4B, 63, 1F, 68, 1D, 09, 45]
+xorsum --help
 ```
 
 # ⚠DISCLAIMER
