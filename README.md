@@ -20,3 +20,6 @@ Example output:
 ```
 [ 00, ff, 7f, 80, 69, 42, be, ef, aa, 55, 77, 86, 96, 01, 10, 88 ]
 ```
+# ⚠ DISCLAIMER ⚠
+**DO NOT USE FOR CRYPTOGRAPHIC PURPOSES**
+The algorithm is **not** crypto-secure. It is intended to be a simple, basic, and fast checksum algorithm
