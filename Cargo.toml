@@ -6,7 +6,6 @@ description = "Get XOR hash/digest of a file with this command-line utility"
 keywords = ["checksum", "hash", "xor"]
 categories = ["command-line-utilities", "algorithms"]
 license = "Unlicense"
-license-file = "LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
