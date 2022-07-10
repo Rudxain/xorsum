@@ -4,6 +4,8 @@ Computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikip
 This isn't a good hash function, it's only good for checksums, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit. It is intended to be a simple/basic, educational, and fast checksum algorithm.
 
 # Program
+The digest size is hardcoded to be 128bit, but it'll allow custom sizes in the future. The IV is hardcoded to be 0x0, it'll also allow custom values later.
+
 The naming is based on Unix and GNU-coreutils naming conventions, like `cksum` and `md5sum`. The behavior of the program is also intended to be similar (but not identical) to those checksum programs.
 
 I'm still trying to fix the formatting of the output to be a single sequence of hex nibbles without delimiter.
