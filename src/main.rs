@@ -9,6 +9,7 @@ const VER_CMD: [&str; 2] = ["-v", "--version"];
 const BRIEF_CMD: [&str; 2] = ["-b", "--brief"];
 const LOWER_CMD: [&str; 2] = ["-a", "--lower"];
 const UPPER_CMD: [&str; 2] = ["-A", "--UPPER"];
+const LEN_CMD: [&str; 2] = ["-l", "--len"];
 
 fn main() -> Result<()> {
 	let args: Vec<String> = std::env::args().collect();
@@ -18,17 +19,17 @@ fn main() -> Result<()> {
 	let mut upper = false; //uppercase hex
 
 	let mut is_len = false;
-	let mut byte_len: usize = 0x10; //digest/hash size in Bytes
+	let mut digest_len: usize = 0x10;
 
 	let mut first_iter = true;
 	for arg in &args {
 		if first_iter {first_iter = false; continue}
 		if is_len {
-			byte_len = arg.parse().unwrap();
+			digest_len = arg.parse().unwrap();
 			is_len = false;
 			continue
 		}
-		if arg == "--len" || arg == "-l" {
+		if arg == LEN_CMD[0] || arg == LEN_CMD[1] {
 			is_len = true;
 			continue
 		}
@@ -42,6 +43,7 @@ fn main() -> Result<()> {
 			println!("{}, {}		Only hash, no filename", BRIEF_CMD[0], BRIEF_CMD[1]);
 			println!("{}, {}		lowercase hex (default)", LOWER_CMD[0], LOWER_CMD[1]);
 			println!("{}, {}		UPPERcase hex", UPPER_CMD[0], UPPER_CMD[1]);
+			println!("{}, {}		Digest size in bytes. Default is 16B (128bit)", LEN_CMD[0], LEN_CMD[1]);
 			exit(0);
 		}
 		if arg == VER_CMD[0] || arg == VER_CMD[1] {
@@ -64,14 +66,14 @@ fn main() -> Result<()> {
 
 	let read_in = files.len() == 0;
 
-	let mut sbox: Vec<u8> = vec![0; byte_len]; //state box, IV = 0
+	let mut sbox: Vec<u8> = vec![0; digest_len]; //state box, IV = 0
 
 	let mut i: usize = 0;
 	if read_in {
 		for b in stdin().bytes() {
 			sbox[i] ^= b.unwrap();
 			i += 1;
-			i %= byte_len;
+			i %= digest_len;
 		}
 
 		if upper {println!("{:02X?}", sbox)} else {println!("{:02x?}", sbox)}
@@ -83,7 +85,7 @@ fn main() -> Result<()> {
 			for b in f.bytes() {
 				sbox[i] ^= b.unwrap();
 				i += 1;
-				i %= byte_len;
+				i %= digest_len;
 			}
 
 			if brief {
