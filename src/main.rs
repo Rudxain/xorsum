@@ -22,7 +22,6 @@ fn main() -> std::io::Result<()> {
 		i %= BYTE_SIZE;
 	}
 
-	//this is good enough, but the format is bad
 	println!("{:02X?}", sbox);
 
 	Ok(())
