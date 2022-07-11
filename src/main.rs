@@ -116,8 +116,10 @@ fn main() -> std::io::Result<()> {
 			//I hope this uses a buffer to prevent RAM from exploding
 			else { xor_cipher(std::fs::File::open(&p)?.bytes(), sbox) };
 
-			if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
-			else { println!("{} {p}", bytevec_tohex(&sbox, upper)) }
+			let hex = bytevec_tohex(&sbox, upper);
+			//can this be minified?
+			if brief { println!("{hex}") }
+			else { println!("{hex} {p}") }
 
 			sbox.fill(0) //reset
 		}
