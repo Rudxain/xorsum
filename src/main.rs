@@ -16,9 +16,9 @@ instead of repeatedly XORing a key against a payload,
 it XORs the entire payload against the key (or IV).
 so it's equivalent (not identical) to a standard XOR cipher
 */
-fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, Error>>>(iter: T, mut vector: Vec<u8>) -> Vec<u8> {
+fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, Error>>>(bytes: T, mut vector: Vec<u8>) -> Vec<u8> {
 	let mut i = 0;
-	for b in iter {
+	for b in bytes {
 		vector[i] ^= b.unwrap();
 		i = (i + 1) % vector.len();
 	}
@@ -37,9 +37,11 @@ const LOWER_ARG: [&str; 2] = ["-a", "--lower"];
 const UPPER_ARG: [&str; 2] = ["-A", "--UPPER"];
 
 fn print_help(){
-	println!("Usage: {NAME} [OPTION]... [FILE]...");
-	println!("If no FILES are given, or if FILE is \"-\", reads Standard Input");
-	println!("OPTIONS:");
+	println!("\
+	Usage: {NAME} [OPTION]... [FILE]...\n\
+	If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
+	Options:\
+	");
 	println!("{}, {}		Print help", HELP_ARG[0], HELP_ARG[1]);
 	println!("{}, {}		Print version number", VER_ARG[0], VER_ARG[1]);
 	println!("{}, {}		Digest size in bytes. Default is 16B (128bit)", LEN_ARG[0], LEN_ARG[1]);
