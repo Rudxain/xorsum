@@ -17,10 +17,13 @@ it XORs the entire payload against the key (or IV).
 so it's equivalent (not identical) to a standard XOR cipher
 */
 fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut vector: Vec<u8>) -> Vec<u8> {
-	let mut i = 0;
-	for b in bytes {
-		vector[i] ^= b.unwrap();
-		i = (i + 1) % vector.len();
+	let len = vector.len();
+	if len > 0 {
+		let mut i = 0;
+		for b in bytes {
+			vector[i] ^= b.unwrap();
+			i = (i + 1) % len;
+		}
 	}
 	vector
 }
@@ -103,21 +106,16 @@ fn main() -> std::io::Result<()> {
 	let mut sbox = vec![0; digest_len]; //state box, IV = 0
 
 	if paths.len() == 0 {
-		if digest_len > 0 { sbox = xor_cipher(std::io::stdin().bytes(), sbox) }
+		sbox = xor_cipher(std::io::stdin().bytes(), sbox);
 		println!("{}{}", bytevec_tohex(&sbox, upper), if brief {""} else {" -"})
 	}
 	else {
 		for p in paths {
-			if digest_len > 0 {
-				if p == "-" {
-					sbox = xor_cipher(std::io::stdin().bytes(), sbox)
-				}
-				else {
-					let f = std::fs::File::open(&p)?;
-					//I hope this uses a buffer to prevent RAM from exploding
-					sbox = xor_cipher(f.bytes(), sbox)
-				}
-			}
+			//can't minify further, because of incompatible types
+			sbox = if p == "-" { xor_cipher(std::io::stdin().bytes(), sbox)}
+			//I hope this uses a buffer to prevent RAM from exploding
+			else { xor_cipher(std::fs::File::open(&p)?.bytes(), sbox) };
+
 			if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
 			else { println!("{} {p}", bytevec_tohex(&sbox, upper)) }
 
