@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::io::{Read, Error};
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 
 //convert vector of bytes to a contiguous hex string
@@ -9,6 +9,20 @@ fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 		hex += &(if upper {format!("{byte:02X}")} else {format!("{byte:02x}")})
 	}
 	hex
+}
+
+/*
+instead of repeatedly XORing a key against a payload,
+it XORs the entire payload against the key (or IV).
+so it's equivalent (not identical) to a standard XOR cipher
+*/
+fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, Error>>>(iter: T, mut vector: Vec<u8>) -> Vec<u8> {
+	let mut i = 0;
+	for b in iter {
+		vector[i] ^= b.unwrap();
+		i = (i + 1) % vector.len();
+	}
+	vector
 }
 
 const NAME: &str = "xorsum";
@@ -85,15 +99,9 @@ fn main() -> std::io::Result<()> {
 	if raw {brief = true} //avoid bugs
 
 	let mut sbox = vec![0; digest_len]; //state box, IV = 0
-	let mut i = 0;
 
 	if paths.len() == 0 {
-		if digest_len > 0 {
-			for b in std::io::stdin().bytes() {
-				sbox[i] ^= b.unwrap();
-				i = (i + 1) % digest_len;
-			}
-		}
+		if digest_len > 0 { sbox = xor_cipher(std::io::stdin().bytes(), sbox) }
 		if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
 		else { println!("{} -", bytevec_tohex(&sbox, upper)) }
 	}
@@ -101,18 +109,12 @@ fn main() -> std::io::Result<()> {
 		for p in paths {
 			if digest_len > 0 {
 				if p == "-" {
-					for b in std::io::stdin().bytes() {
-						sbox[i] ^= b.unwrap();
-						i = (i + 1) % digest_len;
-					}
+					sbox = xor_cipher(std::io::stdin().bytes(), sbox)
 				}
 				else {
 					let f = std::fs::File::open(&p)?;
 					//I hope this uses a buffer to prevent RAM from exploding
-					for b in f.bytes() {
-						sbox[i] ^= b.unwrap();
-						i = (i + 1) % digest_len;
-					}
+					sbox = xor_cipher(f.bytes(), sbox)
 				}
 			}
 			if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
