@@ -104,8 +104,7 @@ fn main() -> std::io::Result<()> {
 
 	if paths.len() == 0 {
 		if digest_len > 0 { sbox = xor_cipher(std::io::stdin().bytes(), sbox) }
-		if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
-		else { println!("{} -", bytevec_tohex(&sbox, upper)) }
+		println!("{}{}", bytevec_tohex(&sbox, upper), if brief {""} else {" -"})
 	}
 	else {
 		for p in paths {
