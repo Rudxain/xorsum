@@ -1,5 +1,5 @@
 use std::io::Read;
-//I don't want to pollute the global scope, so I'll use `use` only when needed
+//I don't want to pollute the global scope, so I'll use `use` sparingly
 
 //convert vector of bytes to a contiguous hex string
 //supports UPPERCASE and lowercase
@@ -74,7 +74,7 @@ fn main() -> std::io::Result<()> {
 		if arg == UPPER_ARG[0] || arg == UPPER_ARG[1] {upper = true; continue}
 		if arg == LOWER_ARG[0] || arg == LOWER_ARG[1] {upper = false; continue}
 
-		if arg.starts_with("-") {
+		if arg.starts_with("-") && arg != "-" {
 			println!("Unrecognized option. Run `{NAME} --help` for details");
 			return Ok(()) //IDK if this is good practice lol
 		}
@@ -94,16 +94,25 @@ fn main() -> std::io::Result<()> {
 				i = (i + 1) % digest_len;
 			}
 		}
-		println!("{}", bytevec_tohex(&sbox, upper))
+		if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
+		else { println!("{} -", bytevec_tohex(&sbox, upper)) }
 	}
 	else {
 		for p in paths {
 			if digest_len > 0 {
-				let f = std::fs::File::open(&p)?;
-				//I hope this uses a buffer to prevent RAM from exploding
-				for b in f.bytes() {
-					sbox[i] ^= b.unwrap();
-					i = (i + 1) % digest_len;
+				if p == "-" {
+					for b in std::io::stdin().bytes() {
+						sbox[i] ^= b.unwrap();
+						i = (i + 1) % digest_len;
+					}
+				}
+				else {
+					let f = std::fs::File::open(&p)?;
+					//I hope this uses a buffer to prevent RAM from exploding
+					for b in f.bytes() {
+						sbox[i] ^= b.unwrap();
+						i = (i + 1) % digest_len;
+					}
 				}
 			}
 			if brief { println!("{}", bytevec_tohex(&sbox, upper)) }
