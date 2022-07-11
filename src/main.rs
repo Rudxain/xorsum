@@ -94,7 +94,7 @@ fn main() -> std::io::Result<()> {
 				i = (i + 1) % digest_len;
 			}
 		}
-		println!("{}", bytevec_tohex(&sbox, upper))
+		println!("{} -", bytevec_tohex(&sbox, upper))
 	}
 	else {
 		for p in paths {
