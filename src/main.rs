@@ -30,10 +30,11 @@ fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: 
 
 const NAME: &str = "xorsum";
 const VERSION: &str = "2.0.0"; //should be the same as in Cargo.toml
+const DEFAULT_SIZE: usize = 8;
 
 const HELP_ARG: [&str; 2] = ["-h", "--help"];
 const VER_ARG: [&str; 2] = ["-v", "--version"];
-const LEN_ARG: [&str; 2] = ["-l", "--len"];
+const LEN_ARG: [&str; 2] = ["-l", "--length"];
 const BRIEF_ARG: [&str; 2] = ["-b", "--brief"];
 const RAW_ARG: [&str; 2] = ["-r", "--raw"];
 const LOWER_ARG: [&str; 2] = ["-a", "--lower"];
@@ -45,11 +46,11 @@ fn print_help(){
 	If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
 	Options:\
 	");
-	println!("{}, {}		Print help", HELP_ARG[0], HELP_ARG[1]);
+	println!("{}, {}		Print this help", HELP_ARG[0], HELP_ARG[1]);
 	println!("{}, {}		Print version number", VER_ARG[0], VER_ARG[1]);
-	println!("{}, {}		Digest size in bytes. Default is 16B (128bit)", LEN_ARG[0], LEN_ARG[1]);
-	println!("{}, {}		Only hash, no filename", BRIEF_ARG[0], BRIEF_ARG[1]);
-	println!("{}, {}		Print raw bytes, no hex. `{}` is implied. Ignores all files, but the 1st", RAW_ARG[0], RAW_ARG[1], BRIEF_ARG[0]);
+	println!("{}, {} <LEN>	Hash size in bytes (prior to hex-encoding). Default {}", LEN_ARG[0], LEN_ARG[1], DEFAULT_SIZE);
+	println!("{}, {}		Only print hash, no filenames", BRIEF_ARG[0], BRIEF_ARG[1]);
+	println!("{}, {}		Print raw bytes, not hex. `{}` is implied", RAW_ARG[0], RAW_ARG[1], BRIEF_ARG[0]);
 	println!("{}, {}		lowercase hex (default)", LOWER_ARG[0], LOWER_ARG[1]);
 	println!("{}, {}		UPPERCASE hex", UPPER_ARG[0], UPPER_ARG[1]);
 }
@@ -62,7 +63,7 @@ fn main() -> std::io::Result<()> {
 
 	//temporary internal flag to remember if prev arg was a `LEN_CMD`
 	let mut is_len = false;
-	let mut digest_len = 0x10;
+	let mut digest_len = DEFAULT_SIZE;
 
 	let mut first_iter = true;
 	for arg in std::env::args() {
