@@ -45,7 +45,7 @@ fn print_help(){
 	println!("{}, {}	Print version number", VER_ARG[0], VER_ARG[1]);
 	println!("{}, {} <LEN>	Hash size in bytes (prior to hex-encoding). Default {}", LEN_ARG[0], LEN_ARG[1], DEFAULT_SIZE);
 	println!("{}, {}	Only print hash, no filenames", BRIEF_ARG[0], BRIEF_ARG[1]);
-	println!("{}, {}	Print raw bytes, not hex. `{}` is implied", RAW_ARG[0], RAW_ARG[1], BRIEF_ARG[0]);
+	println!("{}, {}	Print raw bytes, not hex", RAW_ARG[0], RAW_ARG[1]);
 	println!("{}, {}	lowercase hex (default)", LOWER_ARG[0], LOWER_ARG[1]);
 	println!("{}, {}	UPPERCASE hex", UPPER_ARG[0], UPPER_ARG[1]);
 }
