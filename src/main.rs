@@ -56,7 +56,7 @@ fn main() -> std::io::Result<()> {
 	let mut upper = false;
 	let mut raw = false;
 
-	//temporary internal flag to remember if prev arg was a `LEN_CMD`
+	//temporary internal flag to remember if prev arg was a `LEN_ARG`
 	let mut is_len = false;
 	let mut digest_len = DEFAULT_SIZE;
 
