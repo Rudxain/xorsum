@@ -2,7 +2,7 @@
 name = "xorsum"
 version = "2.0.0"
 edition = "2021"
-description = "Get XOR hash/digest of a file with this command-line utility"
+description = "Get XOR hash/digest with this command-line tool"
 keywords = ["checksum", "checksums", "hash", "hashes", "hasher", "digest", "xor", "file", "files", "data", "binary", "hexadecimal"]
 categories = ["command-line-utilities", "algorithms"]
 license = "Unlicense"
