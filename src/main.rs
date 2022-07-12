@@ -16,16 +16,16 @@ instead of repeatedly XORing a key against a payload,
 it XORs the entire payload against the key (or IV).
 so it's equivalent (not identical) to a standard XOR cipher
 */
-fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut vector: Vec<u8>) -> Vec<u8> {
-	let len = vector.len();
+fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut key: Vec<u8>) -> Vec<u8> {
+	let len = key.len();
 	if len > 0 {
 		let mut i = 0;
 		for b in bytes {
-			vector[i] ^= b.unwrap();
+			key[i] ^= b.unwrap();
 			i = (i + 1) % len;
 		}
 	}
-	vector
+	key
 }
 
 const NAME: &str = "xorsum";
@@ -57,7 +57,7 @@ fn print_help(){
 fn main() -> std::io::Result<()> {
 	let mut paths: Vec<String> = Vec::new();
 	let mut brief = false;
-	let mut upper = false; //uppercase hex
+	let mut upper = false;
 	let mut raw = false;
 
 	//temporary internal flag to remember if prev arg was a `LEN_CMD`
@@ -111,15 +111,12 @@ fn main() -> std::io::Result<()> {
 	}
 	else {
 		for p in paths {
-			//can't minify further, because of incompatible types
 			sbox = if p == "-" { xor_cipher(std::io::stdin().bytes(), sbox)}
 			//I hope this uses a buffer to prevent RAM from exploding
 			else { xor_cipher(std::fs::File::open(&p)?.bytes(), sbox) };
 
 			let hex = bytevec_tohex(&sbox, upper);
-			//can this be minified?
-			if brief { println!("{hex}") }
-			else { println!("{hex} {p}") }
+			if brief { println!("{hex}") } else { println!("{hex} {p}") }
 
 			sbox.fill(0) //reset
 		}
