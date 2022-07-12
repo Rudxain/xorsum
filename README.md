@@ -26,22 +26,22 @@ xorsum --help
 ```
 
 # Examples
-Let's create an empty text file named `a`. The output of `xorsum --len 4 a` should be:
-```
-00000000 a
-```
+```sh
+#Let's create an empty file named "a"
+echo -n "" > a
+xorsum --len 4
+#output should be "00000000 a" (without quotes)
 
-If we write "aaaa" to this file and rehash it with `xorsum a -l 4`, the output will be:
-```
-61616161 a
-```
-Because "61" is the hex value of UTF-8 char "a"
+#write "aaaa" to this file and rehash it
+echo -n aaaa > a
+xorsum a -l 4
+#out: "61616161 a"
+#because "61" is the hex value of the UTF-8 char "a"
 
-Rehashing the file with `xorsum a -b` yields:
+xorsum a -b
+#out: "6161616100000000"
+#this is because both the IV and padding are all zeros.
 ```
-6161616100000000
-```
-This is because both the IV and padding are all zeros.
 
 # ⚠DISCLAIMERS
 0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
