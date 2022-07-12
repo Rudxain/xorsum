@@ -30,7 +30,9 @@ xorsum --help
 #let's create an empty file named "a"
 echo -n "" > a
 xorsum --length 4 a
-#output should be "00000000 a" (without quotes)
+#output will be "00000000 a" (without quotes)
+#`echo -n` has different behavior in Linux distros and Windows
+#because it might include line endings like LF or CR-LF
 
 #write "aaaa" to this file and rehash it
 echo -n aaaa > a
