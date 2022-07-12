@@ -4,7 +4,7 @@ Computes a hash by using an algorithm based on the [XOR-cipher](https://en.wikip
 This isn't a good hash function, it's only good for checksums, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit. It is intended to be a simple/basic, educational, and fast checksum algorithm.
 
 # Program
-The digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The initialization-vector is hardcoded to be 0x0.
+The digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
 Both the naming and behavior are based on  [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
