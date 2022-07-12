@@ -41,7 +41,7 @@ echo bruh > "-"
 #to prevent interpretation as an `OPTION`, use "./" relative path
 xorsum "./-"
 ```
-Note: `echo -n` has different behavior depending on OS and binary version, because it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
+Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
 
 PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. Use `Write-Host -NoNewline` instead.
 
