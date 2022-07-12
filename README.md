@@ -27,9 +27,9 @@ xorsum --help
 
 # Examples
 ```sh
-#Let's create an empty file named "a"
+#let's create an empty file named "a"
 echo -n "" > a
-xorsum --len 4
+xorsum --length 4
 #output should be "00000000 a" (without quotes)
 
 #write "aaaa" to this file and rehash it
