@@ -10,22 +10,16 @@ Both the naming and behavior are based on  [`cksum`](https://en.wikipedia.org/wi
 
 # Usage
 ```sh
-cargo install xorsum
-xorsum [OPTION]... [FILE]...
+cargo install xorsum #install from crates.io registry
+xorsum [OPTION]... [FILE]... #argument "syntax"
 ```
 
-If you want to build from source:
-```sh
-cd [REPO] #path to cloned/downloaded repo
-cargo build --release
-```
-
-For info about options, run:
+For ℹinfo about options, run:
 ```sh
 xorsum --help
 ```
 
-# Examples
+# Example
 ```sh
 #let's create an empty file named "a"
 echo -n "" > a
