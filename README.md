@@ -9,9 +9,14 @@ The digest size is 64bit (8Byte) by default, but can be set to any valid `usize`
 Both the naming and behavior are based on  [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 # Usage
+To install:
 ```sh
-cargo install xorsum #install from crates.io registry
-xorsum [OPTION]... [FILE]... #argument "syntax"
+cargo install xorsum #(from crates.io registry)
+```
+
+Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
+```sh
+xorsum [OPTION]... [FILE]...
 ```
 
 For ℹinfo about options, run:
@@ -35,6 +40,11 @@ xorsum a -l 4
 xorsum a --brief
 #out: "6161616100000000"
 #this is because both the IV and padding are all zeros
+
+#`--length` DOESN'T TRUNCATE the output digest
+xorsum some-big-file -b -l 3 #"00ff55"
+xorsum some-big-file -b -l 2 #"69aa" NOT "00ff"
+#as you can see, `-l` can return very different hashes from the same file
 
 #what if you have a file named "-"?
 echo bruh > -
