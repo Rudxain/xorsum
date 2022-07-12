@@ -22,7 +22,7 @@ xorsum --help
 # Example
 ```sh
 #let's create an empty file named "a"
-echo -n "" > a
+echo -n > a
 xorsum --length 4 a
 #output will be "00000000 a" (without quotes)
 
@@ -37,9 +37,9 @@ xorsum a --brief
 #this is because both the IV and padding are all zeros
 
 #what if you have a file named "-"?
-echo bruh > "-"
+echo bruh > -
 #to prevent interpretation as an `OPTION`, use "./" relative path
-xorsum "./-"
+xorsum ./-
 ```
 Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
 
