@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::io::{Read, Write};
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 
 //convert vector of bytes to a contiguous hex string
@@ -99,7 +99,7 @@ fn main() -> std::io::Result<()> {
 			return Ok(()) //IDK if this is good practice lol
 		}
 		else {
-			paths.push(arg); //interpret as filename
+			paths.push(arg) //interpret as filename
 		}
 	}
 	if raw {brief = true} //avoid bugs
@@ -108,7 +108,12 @@ fn main() -> std::io::Result<()> {
 
 	if paths.len() == 0 {
 		sbox = xor_cipher(std::io::stdin().bytes(), sbox);
-		println!("{}{}", bytevec_tohex(&sbox, upper), if brief {""} else {" -"})
+		if raw {
+			std::io::stdout().write_all(&sbox).unwrap()
+		}
+		else {
+			println!("{}{}", bytevec_tohex(&sbox, upper), if brief {""} else {" -"})
+		}
 	}
 	else {
 		for p in paths {
@@ -116,9 +121,13 @@ fn main() -> std::io::Result<()> {
 			//I hope this uses a buffer to prevent RAM from exploding
 			else { xor_cipher(std::fs::File::open(&p)?.bytes(), sbox) };
 
-			let hex = bytevec_tohex(&sbox, upper);
-			if brief { println!("{hex}") } else { println!("{hex} {p}") }
-
+			if raw {
+				std::io::stdout().write_all(&sbox).unwrap()
+			}
+			else {
+				let hex = bytevec_tohex(&sbox, upper);
+				if brief { println!("{hex}") } else { println!("{hex} {p}") }
+			}
 			sbox.fill(0) //reset
 		}
 	}
