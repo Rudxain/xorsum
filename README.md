@@ -29,7 +29,7 @@ xorsum --help
 ```sh
 #let's create an empty file named "a"
 echo -n "" > a
-xorsum --length 4
+xorsum --length 4 a
 #output should be "00000000 a" (without quotes)
 
 #write "aaaa" to this file and rehash it
@@ -38,9 +38,14 @@ xorsum a -l 4
 #out: "61616161 a"
 #because "61" is the hex value of the UTF-8 char "a"
 
-xorsum a -b
+xorsum a --brief
 #out: "6161616100000000"
-#this is because both the IV and padding are all zeros.
+#this is because both the IV and padding are all zeros
+
+#what if you have a file named "-"?
+echo bruh > "-"
+#to prevent interpretation as an `OPTION`, use "./" relative path
+xorsum "./-"
 ```
 
 # ⚠DISCLAIMERS
