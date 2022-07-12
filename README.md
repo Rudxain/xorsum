@@ -31,8 +31,6 @@ xorsum --help
 echo -n "" > a
 xorsum --length 4 a
 #output will be "00000000 a" (without quotes)
-#`echo -n` has different behavior in Linux distros and Windows
-#because it might include line endings like LF or CR-LF
 
 #write "aaaa" to this file and rehash it
 echo -n aaaa > a
@@ -49,6 +47,8 @@ echo bruh > "-"
 #to prevent interpretation as an `OPTION`, use "./" relative path
 xorsum "./-"
 ```
+Note: `echo -n` has different behavior depending on OS and binary version, because it might include line endings like `\n` (LF) or `\r\n` (CR-LF).
+The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
 
 # ⚠DISCLAIMERS
 0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
