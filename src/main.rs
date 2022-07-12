@@ -10,26 +10,21 @@ fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	hex
 }
 
-/*
-instead of repeatedly XORing a key against a payload,
-it XORs the entire payload against the key (or IV).
-so it's equivalent (not identical) to a standard XOR cipher
-*/
-fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut key: Vec<u8>) -> Vec<u8>
+fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, len: usize) -> Vec<u8>
 {
-	let len = key.len();
+	let mut sbox = vec![0; len]; //state box, IV = 0
 	if len > 0 {
 		let mut i = 0;
 		for b in bytes {
-			key[i] ^= b.unwrap();
+			sbox[i] ^= b.unwrap();
 			i = (i + 1) % len;
 		}
 	}
-	key
+	sbox
 }
 
 const NAME: &str = "xorsum";
-const VERSION: &str = "2.0.0"; //should be the same as in Cargo.toml
+const VERSION: &str = "2.0.1"; //should be the same as in Cargo.toml
 const DEFAULT_SIZE: usize = 8;
 
 const HELP_ARG: [&str; 2] = ["-h", "--help"];
@@ -104,31 +99,28 @@ fn main() -> std::io::Result<()> {
 	}
 	if raw {brief = true} //avoid bugs
 
-	let mut sbox = vec![0; digest_len]; //state box, IV = 0
-
 	if paths.len() == 0 {
-		sbox = xor_cipher(std::io::stdin().bytes(), sbox);
+		let hash = xor_hasher(std::io::stdin().bytes(), digest_len);
 		if raw {
-			std::io::stdout().write_all(&sbox).unwrap()
+			std::io::stdout().write_all(&hash).unwrap()
 		}
 		else {
-			println!("{}{}", bytevec_tohex(&sbox, upper), if brief {""} else {" -"})
+			println!("{}{}", bytevec_tohex(&hash, upper), if brief {""} else {" -"})
 		}
 	}
 	else {
 		for p in paths {
-			sbox = if p == "-" { xor_cipher(std::io::stdin().bytes(), sbox)}
+			let hash = if p == "-" { xor_hasher(std::io::stdin().bytes(), digest_len) }
 			//I hope this uses a buffer to prevent RAM from exploding
-			else { xor_cipher(std::fs::File::open(&p)?.bytes(), sbox) };
+			else { xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len) };
 
 			if raw {
-				std::io::stdout().write_all(&sbox).unwrap()
+				std::io::stdout().write_all(&hash).unwrap()
 			}
 			else {
-				let hex = bytevec_tohex(&sbox, upper);
+				let hex = bytevec_tohex(&hash, upper);
 				if brief { println!("{hex}") } else { println!("{hex} {p}") }
 			}
-			sbox.fill(0) //reset
 		}
 	}
 	Ok(())
