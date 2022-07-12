@@ -96,7 +96,6 @@ fn main() -> std::io::Result<()> {
 			paths.push(arg) //interpret as filename
 		}
 	}}
-	if raw {brief = true}
 
 	if paths.len() == 0 {
 		let hash = xor_hasher(std::io::stdin().bytes(), digest_len);
@@ -114,7 +113,8 @@ fn main() -> std::io::Result<()> {
 			else { xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len) };
 
 			if raw {
-				std::io::stdout().write_all(&hash).unwrap()
+				std::io::stdout().write_all(&hash).unwrap();
+				println!("{}", if brief {""} else {" -"})
 			}
 			else {
 				let hex = bytevec_tohex(&hash, upper);
