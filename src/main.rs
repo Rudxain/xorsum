@@ -37,9 +37,9 @@ const UPPER_ARG: [&str; 2] = ["-A", "--UPPER"];
 
 fn print_help(){
 	println!("\
-	Usage: {NAME} [OPTION]... [FILE]...\n\
-	If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
-	Options:\
+		Usage: {NAME} [OPTION]... [FILE]...\n\
+		If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
+		Options:\
 	");
 	println!("{}, {}	Print this help", HELP_ARG[0], HELP_ARG[1]);
 	println!("{}, {}	Print version number", VER_ARG[0], VER_ARG[1]);
