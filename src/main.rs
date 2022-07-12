@@ -56,14 +56,13 @@ fn main() -> std::io::Result<()> {
 	let mut upper = false;
 	let mut raw = false;
 
-	//temporary internal flag to remember if prev arg was a `LEN_ARG`
-	let mut is_len = false;
 	let mut digest_len = DEFAULT_SIZE;
 
-	let mut first_iter = true;
+	{//ensure both vars are temp
+	let mut is_len = false; let mut i0 = true;
 	for arg in std::env::args() {
 		//awkward way to skip `args[0]`
-		if first_iter {first_iter = false; continue}
+		if i0 {i0 = false; continue}
 
 		if is_len {
 			digest_len = arg.parse().unwrap();
@@ -96,8 +95,8 @@ fn main() -> std::io::Result<()> {
 		else {
 			paths.push(arg) //interpret as filename
 		}
-	}
-	if raw {brief = true} //avoid bugs
+	}}
+	if raw {brief = true}
 
 	if paths.len() == 0 {
 		let hash = xor_hasher(std::io::stdin().bytes(), digest_len);
