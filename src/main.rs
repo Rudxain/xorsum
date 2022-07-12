@@ -1,8 +1,7 @@
 use std::io::{Read, Write};
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 
-//convert vector of bytes to a contiguous hex string
-//supports UPPERCASE and lowercase
+//why isn't this in `std`?
 fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::new();
 	for byte in vector {
@@ -16,7 +15,8 @@ instead of repeatedly XORing a key against a payload,
 it XORs the entire payload against the key (or IV).
 so it's equivalent (not identical) to a standard XOR cipher
 */
-fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut key: Vec<u8>) -> Vec<u8> {
+fn xor_cipher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, mut key: Vec<u8>) -> Vec<u8>
+{
 	let len = key.len();
 	if len > 0 {
 		let mut i = 0;
