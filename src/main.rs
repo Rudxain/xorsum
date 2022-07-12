@@ -24,7 +24,7 @@ fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: 
 }
 
 const NAME: &str = "xorsum";
-const VERSION: &str = "2.0.1"; //should be the same as in Cargo.toml
+const VERSION: &str = "3.0.0"; //should be the same as in Cargo.toml
 const DEFAULT_SIZE: usize = 8;
 
 const HELP_ARG: [&str; 2] = ["-h", "--help"];
