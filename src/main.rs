@@ -1,17 +1,23 @@
-use std::io::{Read, Write};
+use std::io::{Read, Write, stdin, stdout};
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 
 //why isn't this in `std`?
 fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::new();
 	for byte in vector {
-		hex += &(if upper {format!("{byte:02X}")} else {format!("{byte:02x}")})
+		hex += &(if upper {
+			format!("{byte:02X}")
+		} else {
+			format!("{byte:02x}")
+		})
 	}
 	hex
 }
 
-fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(bytes: T, len: usize) -> Vec<u8>
-{
+fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
+	bytes: T,
+	len: usize,
+) -> Vec<u8> {
 	let mut sbox = vec![0; len]; //state box, IV = 0
 	if len > 0 {
 		let mut i = 0;
@@ -35,16 +41,24 @@ const RAW_ARG: [&str; 2] = ["-r", "--raw"];
 const LOWER_ARG: [&str; 2] = ["-a", "--lower"];
 const UPPER_ARG: [&str; 2] = ["-A", "--UPPER"];
 
-fn print_help(){
-	println!("\
+fn print_help() {
+	println!(
+		"\
 		Usage: {NAME} [OPTION]... [FILE]...\n\
 		If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
 		Options:\
-	");
+	"
+	);
 	println!("{}, {}	Print this help", HELP_ARG[0], HELP_ARG[1]);
 	println!("{}, {}	Print version number", VER_ARG[0], VER_ARG[1]);
-	println!("{}, {} <LEN>	Hash size in bytes (prior to hex-encoding). Default {}", LEN_ARG[0], LEN_ARG[1], DEFAULT_SIZE);
-	println!("{}, {}	Only print hash, no filenames", BRIEF_ARG[0], BRIEF_ARG[1]);
+	println!(
+		"{}, {} <LEN>	Hash size in bytes (prior to hex-encoding). Default {}",
+		LEN_ARG[0], LEN_ARG[1], DEFAULT_SIZE
+	);
+	println!(
+		"{}, {}	Only print hash, no filenames",
+		BRIEF_ARG[0], BRIEF_ARG[1]
+	);
 	println!("{}, {}	Print raw bytes, not hex", RAW_ARG[0], RAW_ARG[1]);
 	println!("{}, {}	lowercase hex (default)", LOWER_ARG[0], LOWER_ARG[1]);
 	println!("{}, {}	UPPERCASE hex", UPPER_ARG[0], UPPER_ARG[1]);
@@ -58,67 +72,93 @@ fn main() -> std::io::Result<()> {
 
 	let mut digest_len = DEFAULT_SIZE;
 
-	{//ensure both vars are temp
-	let mut is_len = false; let mut i0 = true;
-	for arg in std::env::args() {
-		//awkward way to skip `args[0]`
-		if i0 {i0 = false; continue}
+	{
+		//ensure both vars are temp
+		let mut is_len = false;
+		let mut i0 = true;
+		for arg in std::env::args() {
+			//awkward way to skip `args[0]`
+			if i0 {
+				i0 = false;
+				continue;
+			}
 
-		if is_len {
-			digest_len = arg.parse().unwrap();
-			is_len = false;
-			continue
-		}
-		if arg == LEN_ARG[0] || arg == LEN_ARG[1] {
-			is_len = true;
-			continue
-		}
+			if is_len {
+				digest_len = arg.parse().unwrap();
+				is_len = false;
+				continue;
+			}
+			if arg == LEN_ARG[0] || arg == LEN_ARG[1] {
+				is_len = true;
+				continue;
+			}
 
-		if arg == HELP_ARG[0] || arg == HELP_ARG[1] {
-			print_help();
-			return Ok(())
-		}
-		if arg == VER_ARG[0] || arg == VER_ARG[1] {
-			println!("{NAME} {VERSION}");
-			return Ok(())
-		}
+			if arg == HELP_ARG[0] || arg == HELP_ARG[1] {
+				print_help();
+				return Ok(());
+			}
+			if arg == VER_ARG[0] || arg == VER_ARG[1] {
+				println!("{NAME} {VERSION}");
+				return Ok(());
+			}
 
-		if arg == BRIEF_ARG[0] || arg == BRIEF_ARG[1] {brief = true; continue}
-		if arg == RAW_ARG[0] || arg == RAW_ARG[1] {raw = true; continue}
-		if arg == UPPER_ARG[0] || arg == UPPER_ARG[1] {upper = true; continue}
-		if arg == LOWER_ARG[0] || arg == LOWER_ARG[1] {upper = false; continue}
+			if arg == BRIEF_ARG[0] || arg == BRIEF_ARG[1] {
+				brief = true;
+				continue;
+			}
+			if arg == RAW_ARG[0] || arg == RAW_ARG[1] {
+				raw = true;
+				continue;
+			}
+			if arg == UPPER_ARG[0] || arg == UPPER_ARG[1] {
+				upper = true;
+				continue;
+			}
+			if arg == LOWER_ARG[0] || arg == LOWER_ARG[1] {
+				upper = false;
+				continue;
+			}
 
-		if arg.starts_with("-") && arg != "-" {
-			println!("Unrecognized option. Run `{NAME} --help` for details");
-			return Ok(()) //IDK if this is good practice lol
-		}
-		else {
-			paths.push(arg) //interpret as filename
-		}
-	}}
-
-	if paths.len() == 0 {
-		let hash = xor_hasher(std::io::stdin().bytes(), digest_len);
-		if raw {
-			std::io::stdout().write_all(&hash).unwrap()
-		}
-		else {
-			println!("{}{}", bytevec_tohex(&hash, upper), if brief {""} else {" -"})
+			if arg.starts_with("-") && arg != "-" {
+				println!("Unrecognized option. Run `{NAME} --help` for details");
+				return Ok(()); //IDK if this is good practice lol
+			} else {
+				paths.push(arg) //interpret as filename
+			}
 		}
 	}
-	else {
+
+	if paths.len() == 0 {
+		let hash = xor_hasher(stdin().bytes(), digest_len);
+		if raw {
+			stdout().write_all(&hash).unwrap()
+		} else {
+			println!(
+				"{}{}",
+				bytevec_tohex(&hash, upper),
+				if brief { "" } else { " -" }
+			)
+		}
+	} else {
 		for p in paths {
-			let hash = if p == "-" { xor_hasher(std::io::stdin().bytes(), digest_len) }
+			let hash = if p == "-" {
+				xor_hasher(stdin().bytes(), digest_len)
+			}
 			//I hope this uses a buffer to prevent RAM from exploding
-			else { xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len) };
+			else {
+				xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len)
+			};
 
 			if raw {
-				std::io::stdout().write_all(&hash).unwrap();
-				println!("{}", if brief {""} else {" -"})
-			}
-			else {
+				stdout().write_all(&hash).unwrap();
+				println!("{}", if brief { "" } else { " -" })
+			} else {
 				let hex = bytevec_tohex(&hash, upper);
-				if brief { println!("{hex}") } else { println!("{hex} {p}") }
+				if brief {
+					println!("{hex}")
+				} else {
+					println!("{hex} {p}")
+				}
 			}
 		}
 	}
