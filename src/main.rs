@@ -85,7 +85,7 @@ fn main() -> std::io::Result<()> {
 			}
 			//I hope this uses a buffer to prevent RAM from exploding
 			else {
-				//TO-DO: check if file exists and print `{NAME}: {p}: {NO_FILE_MSG}`
+				//TO-DO: check if file exists and print `{NAME}: {p}: {NO_FILE_MSG}` to stderr
 				xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len)
 			};
 
