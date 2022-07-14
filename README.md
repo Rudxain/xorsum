@@ -21,7 +21,7 @@ cargo install --git https://github.com/Rudxain/xorsum.git
 ```
 This is the most recent version. Compilation isn't guaranteed. And `--help` may be inconsistent with actual program behavior.
 
-To get an already-compiled non-dev executable, go to [GH releases](https://github.com/Rudxain/xorsum/releases)
+To get an already-compiled non-dev executable, go to [GH releases](https://github.com/Rudxain/xorsum/releases).
 
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
 ```sh
