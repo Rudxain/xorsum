@@ -37,7 +37,7 @@ xorsum a -l 4
 #out: "61616161 a"
 #because "61" is the hex value of the UTF-8 char "a"
 
-xorsum a --brief
+xorsum a --brief #`-l 8` is implicit
 #out: "6161616100000000"
 #this is because both the IV and padding are all zeros
 
