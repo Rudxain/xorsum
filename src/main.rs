@@ -1,9 +1,9 @@
 //I don't want to pollute the global scope, so I'll use `use` sparingly
-use std::io::{Read, Write, stdin, stdout};
+use std::io::{stdin, stdout, Read, Write};
 use xorsum::*; //temporary pollution, lol
 
 fn main() -> std::io::Result<()> {
-	let mut paths: Vec<String> = Vec::new();
+	let mut path_args: Vec<String> = Vec::new();
 	let mut brief = false;
 	let mut upper = false;
 	let mut raw = false;
@@ -61,12 +61,12 @@ fn main() -> std::io::Result<()> {
 				println!("Unrecognized option. Run `{NAME} --help` for details");
 				return Ok(()); //IDK if this is good practice lol
 			} else {
-				paths.push(arg) //interpret as filename
+				path_args.push(arg) //interpret as filename
 			}
 		}
 	}
 
-	if paths.len() == 0 {
+	if path_args.len() == 0 {
 		let hash = xor_hasher(stdin().bytes(), digest_len);
 		if raw {
 			stdout().write_all(&hash).unwrap()
@@ -78,27 +78,40 @@ fn main() -> std::io::Result<()> {
 			)
 		}
 	} else {
-		for p in paths {
-			let mut no_file = false;
-			let hash = if p == "-" {
-				xor_hasher(stdin().bytes(), digest_len)
-			}
-			//I hope this uses a buffer to prevent RAM from exploding
-			else {
-				//TO-DO: check if file exists and print `{NAME}: {p}: {NO_FILE_MSG}` to stderr
-				xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len)
-			};
-
-			if raw {
-				stdout().write_all(&hash).unwrap();
-				println!("{}", if brief { "" } else { " -" })
-			} else {
-				let hex = bytevec_tohex(&hash, upper);
-				if brief {
-					println!("{hex}")
-				} else {
-					println!("{hex} {p}")
+		for p_a in path_args {
+			let path = std::path::Path::new(&p_a);
+			if path.is_file() || p_a == "-" {
+				let hash = if p_a == "-" {
+					xor_hasher(stdin().bytes(), digest_len)
 				}
+				//I hope this uses a buffer to prevent RAM from exploding
+				else {
+					xor_hasher(std::fs::File::open(&p_a)?.bytes(), digest_len)
+				};
+
+				if raw {
+					stdout().write_all(&hash).unwrap();
+					println!("{}", if brief { "" } else { " -" })
+				} else {
+					let hex = bytevec_tohex(&hash, upper);
+					if brief {
+						println!("{hex}")
+					} else {
+						println!("{hex} {p_a}")
+					}
+				}
+			} else {
+				std::io::stderr()
+					.write_all(
+						{
+							format!(
+								"{NAME}: {p_a}: {}",
+								if path.is_dir() { DIR_MSG } else { NO_FILE_MSG }
+							)
+						}
+						.as_bytes(),
+					)
+					.unwrap();
 			}
 		}
 	}

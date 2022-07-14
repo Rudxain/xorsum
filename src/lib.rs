@@ -31,6 +31,7 @@ pub const VERSION: &str = "3.0.0"; //should be the same as in Cargo.toml
 pub const DEFAULT_SIZE: usize = 8;
 
 pub const NO_FILE_MSG: &str = "No such file or directory";
+pub const DIR_MSG: &str = "Is a directory";
 
 pub const HELP_ARG: [&str; 2] = ["-h", "--help"];
 pub const VER_ARG: [&str; 2] = ["-v", "--version"];
