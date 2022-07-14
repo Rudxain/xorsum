@@ -1,7 +1,7 @@
 # Algorithm
-It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a hash. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all those chunks together into a new chunk of the same size, the resulting chunk is used as output.
+It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all those chunks together into a new chunk of the same size, the resulting chunk is used as output.
 
-This isn't a hash function, it's only good for [checksums](https://en.wikipedia.org/wiki/Checksum), because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit.
+This isn't a [hash function](https://en.m.wikipedia.org/wiki/Hash_function), because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect). Flipping 1 input bit flips 1 output bit.
 
 # Program
 The digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
@@ -44,6 +44,7 @@ xorsum a --brief #`-l 8` is implicit
 xorsum some-big-file -b -l 3 #"00ff55"
 xorsum some-big-file -b -l 2 #"69aa" NOT "00ff"
 #as you can see, `-l` can return very different hashes from the same file
+#this property can be exploited to emulate the Avalanche Effect (to some extent)
 
 #what if you have a file named "-"?
 echo bruh > -
