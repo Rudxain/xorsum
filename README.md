@@ -14,7 +14,7 @@ To install latest release:
 cargo install xorsum #(from crates.io registry)
 ```
 
-To install latest dev crate:
+To install latest dev crate (compilation not guaranteed):
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
