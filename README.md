@@ -55,6 +55,9 @@ Note: `echo -n` has [different behavior depending on OS and binary version](http
 
 PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
+Quote by Original Author (Rudxain)
+> I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the XOR op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people who like minimalism and don't like bloatware, and for people with low-power devices
+
 # ⚠DISCLAIMER
 0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
 
