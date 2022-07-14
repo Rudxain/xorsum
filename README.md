@@ -9,17 +9,19 @@ The raw digest size is 64bit (8Byte) by default, but can be set to any valid `us
 Both the naming and behavior are influenced by [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 # Usage
-To install latest release:
+To install latest release from [crates.io](https://crates.io) registry:
 ```sh
-cargo install xorsum #(from crates.io registry)
+cargo install xorsum
 ```
 This isn't guaranteed to be the latest version, but it will never throw compilation errors.
 
-To install latest dev crate:
+To install latest dev crate from GH:
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
 This is the most recent version. Compilation isn't guaranteed. And `--help` may be inconsistent with actual program behavior.
+
+To get an already-compiled non-dev executable, go to [GH releases](https://github.com/Rudxain/xorsum/releases)
 
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
 ```sh
