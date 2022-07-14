@@ -58,6 +58,6 @@ PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https
 # ⚠DISCLAIMER
 0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
 
-1. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. The smaller the file, the more data you leak. The bigger the hash, the more data you leak. Small hashes and bigger files are safer, because the `sbox` will (probably) have enough bytes to "mix well".
+1. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
 
 I am **not** responsible for any misuse of this software
