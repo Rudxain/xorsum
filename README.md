@@ -39,7 +39,6 @@ xorsum a -l 4
 
 xorsum a --brief #`-l 8` is implicit
 #out: "6161616100000000"
-#this is because both the IV and padding are all zeros
 
 #`--length` DOESN'T TRUNCATE the output digest
 xorsum some-big-file -b -l 3 #"00ff55"
