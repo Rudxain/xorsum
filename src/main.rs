@@ -10,8 +10,7 @@ fn main() -> std::io::Result<()> {
 
 	let mut digest_len = DEFAULT_SIZE;
 
-	{
-		//ensure both vars are temp
+	{//ensure both vars are temp
 		let mut is_len = false;
 		let mut i0 = true;
 		for arg in std::env::args() {
@@ -77,7 +76,7 @@ fn main() -> std::io::Result<()> {
 				if brief { "" } else { " -" }
 			)
 		}
-	} else {
+	} else {//lol, I noticed this says "pain"
 		for p_a in path_args {
 			let path = std::path::Path::new(&p_a);
 			if path.is_file() || p_a == "-" {
