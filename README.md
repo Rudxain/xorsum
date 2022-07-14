@@ -1,7 +1,7 @@
 # Algorithm
 It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a hash. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all those chunks together into a new chunk of the same size, the resulting chunk is used as output.
 
-This isn't a good hash function, it's only good for checksums, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit. It is intended to be a simple/basic, educational, and fast checksum algorithm.
+This isn't a good hash function, it's only good for checksums, because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), flipping 1 input bit flips 1 output bit.
 
 # Program
 The digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
