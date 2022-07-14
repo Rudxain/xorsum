@@ -9,9 +9,14 @@ The raw digest size is 64bit (8Byte) by default, but can be set to any valid `us
 Both the naming and behavior are influenced by [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 # Usage
-To install:
+To install latest release:
 ```sh
 cargo install xorsum #(from crates.io registry)
+```
+
+To install latest dev crate:
+```sh
+cargo install --git https://github.com/Rudxain/xorsum.git
 ```
 
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
