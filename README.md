@@ -4,7 +4,7 @@ It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a 
 This isn't a [hash function](https://en.wikipedia.org/wiki/Hash_function). It lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), because flipping 1 input bit flips 1 output bit.
 
 # Program
-The raw digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The actual size is bigger because the raw data is expanded to hexadecimal by default. The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
+The raw digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The actual size is bigger because the raw digest is expanded to hexadecimal by default. The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
 Both the naming and behavior are based on  [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
