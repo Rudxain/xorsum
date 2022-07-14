@@ -13,11 +13,13 @@ To install latest release:
 ```sh
 cargo install xorsum #(from crates.io registry)
 ```
+This isn't guaranteed to be the latest version, but it will never throw compilation errors.
 
-To install latest dev crate (compilation not guaranteed):
+To install latest dev crate:
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
+This is the most recent version. Compilation isn't guaranteed. And `--help` may be inconsistent with actual program behavior.
 
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
 ```sh
