@@ -59,8 +59,6 @@ PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https
 I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the XOR op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people who like minimalism and don't like bloatware, and for people with low-power devices
 
 # ⚠DISCLAIMER
-0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
+0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure
 
-1. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
-
-I am **not** responsible for any misuse of this software
+1. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well"
