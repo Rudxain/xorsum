@@ -1,5 +1,5 @@
 # Algorithm
-It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all those chunks together into a new chunk of the same size, the resulting chunk is used as output.
+It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all chunks between each other into a new chunk that's used as output.
 
 This isn't a [hash function](https://en.m.wikipedia.org/wiki/Hash_function), because it lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect). Flipping 1 input bit flips 1 output bit.
 
