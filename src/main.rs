@@ -1,68 +1,6 @@
-use std::io::{Read, Write, stdin, stdout};
 //I don't want to pollute the global scope, so I'll use `use` sparingly
-
-//why isn't this in `std`?
-fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
-	let mut hex = String::new();
-	for byte in vector {
-		hex += &(if upper {
-			format!("{byte:02X}")
-		} else {
-			format!("{byte:02x}")
-		})
-	}
-	hex
-}
-
-fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
-	bytes: T,
-	len: usize,
-) -> Vec<u8> {
-	let mut sbox = vec![0; len]; //state box, IV = 0
-	if len > 0 {
-		let mut i = 0;
-		for b in bytes {
-			sbox[i] ^= b.unwrap();
-			i = (i + 1) % len;
-		}
-	}
-	sbox
-}
-
-const NAME: &str = "xorsum";
-const VERSION: &str = "3.0.0"; //should be the same as in Cargo.toml
-const DEFAULT_SIZE: usize = 8;
-
-const HELP_ARG: [&str; 2] = ["-h", "--help"];
-const VER_ARG: [&str; 2] = ["-v", "--version"];
-const LEN_ARG: [&str; 2] = ["-l", "--length"];
-const BRIEF_ARG: [&str; 2] = ["-b", "--brief"];
-const RAW_ARG: [&str; 2] = ["-r", "--raw"];
-const LOWER_ARG: [&str; 2] = ["-a", "--lower"];
-const UPPER_ARG: [&str; 2] = ["-A", "--UPPER"];
-
-fn print_help() {
-	println!(
-		"\
-		Usage: {NAME} [OPTION]... [FILE]...\n\
-		If no FILES are given, or if FILE is \"-\", reads Standard Input\n\
-		Options:\
-	"
-	);
-	println!("{}, {}	Print this help", HELP_ARG[0], HELP_ARG[1]);
-	println!("{}, {}	Print version number", VER_ARG[0], VER_ARG[1]);
-	println!(
-		"{}, {} <LEN>	Hash size in bytes (prior to hex-encoding). Default {}",
-		LEN_ARG[0], LEN_ARG[1], DEFAULT_SIZE
-	);
-	println!(
-		"{}, {}	Only print hash, no filenames",
-		BRIEF_ARG[0], BRIEF_ARG[1]
-	);
-	println!("{}, {}	Print raw bytes, not hex", RAW_ARG[0], RAW_ARG[1]);
-	println!("{}, {}	lowercase hex (default)", LOWER_ARG[0], LOWER_ARG[1]);
-	println!("{}, {}	UPPERCASE hex", UPPER_ARG[0], UPPER_ARG[1]);
-}
+use std::io::{Read, Write, stdin, stdout};
+use xorsum::*; //temporary pollution, lol
 
 fn main() -> std::io::Result<()> {
 	let mut paths: Vec<String> = Vec::new();
@@ -141,11 +79,13 @@ fn main() -> std::io::Result<()> {
 		}
 	} else {
 		for p in paths {
+			let mut no_file = false;
 			let hash = if p == "-" {
 				xor_hasher(stdin().bytes(), digest_len)
 			}
 			//I hope this uses a buffer to prevent RAM from exploding
 			else {
+				//TO-DO: check if file exists and print `{NAME}: {p}: {NO_FILE_MSG}`
 				xor_hasher(std::fs::File::open(&p)?.bytes(), digest_len)
 			};
 
