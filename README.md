@@ -19,7 +19,7 @@ To install latest dev crate from GH:
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
-This is the most recent version. Compilation isn't guaranteed. And `--help` may be inconsistent with actual program behavior.
+This is the most recent version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
 
 To get an already-compiled non-dev executable, go to [GH releases](https://github.com/Rudxain/xorsum/releases).
 
