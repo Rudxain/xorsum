@@ -33,7 +33,8 @@ For ℹinfo about options, run:
 xorsum --help
 ```
 
-# Example
+# Examples
+## Regular use
 ```sh
 #let's create an empty file named "a"
 echo -n > a
@@ -48,21 +49,48 @@ xorsum a -l 4
 
 xorsum a --brief #`-l 8` is implicit
 #out: "6161616100000000"
+```
+Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
 
+PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
+
+## Emulating AE
+```sh
 #`--length` DOESN'T TRUNCATE the output digest
 xorsum some-big-file -b -l 3 #"00ff55"
 xorsum some-big-file -b -l 2 #"69aa" NOT "00ff"
-#as you can see, `-l` can return very different hashes from the same file
+#as you can see, `-l` can return very different hashes from the same file.
 #this property can be exploited to emulate the Avalanche Effect (to some extent)
+```
 
+## Weird names
+```sh
 #what if you have a file named "-"?
 echo bruh > -
 #to prevent interpretation as an `OPTION`, use "./" relative path
 xorsum ./-
 ```
-Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including a new-line.
 
-PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
+## Finding corrupted bytes
+If you have 2 copies of a file and 1 is corrupted, you can attempt to ["triangulate"](https://en.wikipedia.org/wiki/Triangulation) the index of a corrupted byte without the need to manually search the entire file. This is useful when dealing with big raw-binary files
+```sh
+xorsum a b
+#"6c741b7863326b2c a"
+#"6c74187863326b2c b"
+#the 0-based index is 2 when using `-l 8`
+#mathematically, `i mod 8 = 2`
+
+xorsum a b -l 3
+#3d5a0a a
+#3d590a b
+#`i mod 3 = 1`
+
+xorsum a b -l 2
+#7f12 a
+#7c12 b
+#`i mod 2 = 0`
+```
+There are programs (like `diff`) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs)
 
 # Quote by Original Author (Rudxain)
 I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people who like minimalism and don't like bloatware, and for people with low-power devices
