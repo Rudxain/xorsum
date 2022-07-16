@@ -104,7 +104,7 @@ fn main() -> std::io::Result<()> {
 					.write_all(
 						{
 							format!(
-								"{NAME}: {p_a}: {}",
+								"{NAME}: {p_a}: {}\n",
 								if path.is_dir() { DIR_MSG } else { NO_FILE_MSG }
 							)
 						}
