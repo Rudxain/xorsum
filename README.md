@@ -47,6 +47,10 @@ xorsum a -l 4
 #out: "61616161 a"
 #because "61" is the hex value of the UTF-8 char "a"
 
+#same result when using stdin
+echo -n aaaa | xorsum -l 4
+#out: "61616161 -"
+
 xorsum a --brief #`-l 8` is implicit
 #out: "6161616100000000"
 ```
