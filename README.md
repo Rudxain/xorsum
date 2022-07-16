@@ -57,14 +57,14 @@ PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https
 ## Emulating AE
 `--length` **doesn't truncate** the digest:
 ```sh
-xorsum some-big-file -b -l 3 #"00ff55"
-xorsum some-big-file -b -l 2 #"69aa" NOT "00ff"
+xorsum some_big_file -b -l 3 #"00ff55"
+xorsum some_big_file -b -l 2 #"69aa" NOT "00ff"
 ```
-As you can see, `-l` can return very different hashes from the same file. This property can be exploited to emulate the Avalanche Effect (to some extent)
+As you can see, `-l` can return very different hashes from the same input. This property can be exploited to emulate the Avalanche Effect (to some extent)
 
 ## Weird names
+What if you have a file named "-"?
 ```sh
-#what if you have a file named "-"?
 echo bruh > -
 #to prevent interpretation as an `OPTION`, use "./" relative path
 xorsum ./-
@@ -77,25 +77,25 @@ xorsum a b
 #"6c741b7863326b2c a"
 #"6c74187863326b2c b"
 #the 0-based index is 2 when using `-l 8`
-#mathematically, `i mod 8 = 2`
+#mathematically, i mod 8 = 2
 
 xorsum a b -l 3
-#3d5a0a a
-#3d590a b
-#`i mod 3 = 1`
+#"3d5a0a a"
+#"3d590a b"
+#i mod 3 = 1
 
 xorsum a b -l 2
-#7f12 a
-#7c12 b
-#`i mod 2 = 0`
+#"7f12 a"
+#"7c12 b"
+#i mod 2 = 0
 
-#you can repeat this process with different `-l` values, to solve it easier
+#you can repeat this process with different `-l` values, to solve it easier.
 #IIRC, using primes gives you more info about the index
 ```
-There are programs (like `diff`) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs)
+There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs)
 
-# Quote by Original Author (Rudxain)
-I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people who like minimalism and don't like bloatware, and for people with low-power devices
+# Personal thoughts
+I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people with low-power devices
 
 # ⚠DISCLAIMER
 0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure
