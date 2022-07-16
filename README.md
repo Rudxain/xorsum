@@ -55,13 +55,12 @@ Note: `echo -n` has [different behavior depending on OS and binary version](http
 PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
 ## Emulating AE
+`--length` **doesn't truncate** the digest:
 ```sh
-#`--length` DOESN'T TRUNCATE the output digest
 xorsum some-big-file -b -l 3 #"00ff55"
 xorsum some-big-file -b -l 2 #"69aa" NOT "00ff"
-#as you can see, `-l` can return very different hashes from the same file.
-#this property can be exploited to emulate the Avalanche Effect (to some extent)
 ```
+As you can see, `-l` can return very different hashes from the same file. This property can be exploited to emulate the Avalanche Effect (to some extent)
 
 ## Weird names
 ```sh
@@ -72,7 +71,7 @@ xorsum ./-
 ```
 
 ## Finding corrupted bytes
-If you have 2 copies of a file and 1 is corrupted, you can attempt to ["triangulate"](https://en.wikipedia.org/wiki/Triangulation) the index of a corrupted byte without the need to manually search the entire file. This is useful when dealing with big raw-binary files
+If you have 2 copies of a file and 1 is corrupted, you can attempt to ["triangulate"](https://en.wikipedia.org/wiki/Triangulation) the index of a corrupted byte, without manually searching the entire file. This is useful when dealing with big raw-binary files
 ```sh
 xorsum a b
 #"6c741b7863326b2c a"
@@ -89,6 +88,9 @@ xorsum a b -l 2
 #7f12 a
 #7c12 b
 #`i mod 2 = 0`
+
+#you can repeat this process with different `-l` values, to solve it easier
+#IIRC, using primes gives you more info about the index
 ```
 There are programs (like `diff`) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs)
 
