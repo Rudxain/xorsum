@@ -17,10 +17,8 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 ) -> Vec<u8> {
 	let mut sbox = vec![0; len]; //state box, IV = 0
 	if len > 0 {
-		let mut i = 0;
-		for b in bytes {
-			sbox[i] ^= b.unwrap();
-			i = (i + 1) % len;
+		for (i, b) in bytes.enumerate() {
+			sbox[i % len] ^= b.unwrap();
 		}
 	}
 	sbox
