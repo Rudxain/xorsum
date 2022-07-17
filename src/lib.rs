@@ -25,7 +25,7 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 }
 
 pub const NAME: &str = "xorsum";
-pub const VERSION: &str = "3.0.0"; //should be the same as in Cargo.toml
+pub const VERSION: &str = "3.0.1"; //should be the same as in Cargo.toml
 pub const DEFAULT_SIZE: usize = 8;
 
 pub const NO_FILE_MSG: &str = "No such file or directory";
