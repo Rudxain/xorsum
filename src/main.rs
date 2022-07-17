@@ -12,14 +12,7 @@ fn main() -> std::io::Result<()> {
 
 	{//ensure both vars are temp
 		let mut is_len = false;
-		let mut i0 = true;
-		for arg in std::env::args() {
-			//awkward way to skip `args[0]`
-			if i0 {
-				i0 = false;
-				continue;
-			}
-
+		for arg in std::env::args().skip(1) {
 			if is_len {
 				digest_len = arg.parse().unwrap();
 				is_len = false;
