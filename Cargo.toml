@@ -1,6 +1,6 @@
 [package]
 name = "xorsum"
-version = "3.1.0"
+version = "3.1.1"
 edition = "2021"
 description = "Get XOR hash/digest with this command-line tool"
 keywords = ["checksum", "hash", "xor", "file", "data"]
@@ -10,3 +10,4 @@ repository = "https://github.com/Rudxain/xorsum"
 
 [dependencies]
 clap = { version = "3.2.12", features = ["derive"] }
+fastrand = "1.7.0"

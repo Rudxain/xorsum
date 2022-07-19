@@ -15,10 +15,10 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 	bytes: T,
 	mut key: Vec<u8>,
 ) -> Vec<u8> {
-	let len = key.len();
-	if len > 0 {
+	let l = key.len();
+	if l > 0 {
 		for (i, b) in bytes.enumerate() {
-			key[i % len] ^= b.unwrap();
+			key[i % l] ^= b.unwrap();
 		}
 	}
 	key

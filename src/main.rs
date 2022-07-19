@@ -1,8 +1,11 @@
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 use clap::{ArgGroup, Parser};
-use std::io::{stdin, stdout, Read, Write};
-use std::path::{Path, PathBuf};
+use std::{
+	io::{stdin, stdout, Read, Write},
+	path::{Path, PathBuf},
+};
 use xorsum::*;
+use fastrand;
 
 const NAME: &str = "xorsum";
 const DEFAULT_SIZE: usize = 8;
@@ -10,9 +13,22 @@ const DEFAULT_SIZE: usize = 8;
 const NO_FILE_MSG: &str = "No such file or directory";
 const DIR_MSG: &str = "Is a directory";
 
+const HELL_MSG: [&str; 4] = [
+	"I can't go to hell. I'm all out of vacation days.",
+	"Highway to Hell!",
+	"RIP N' TEAR",
+	"Son't eorry evrryone makez nistakes while typong",
+];
+const HEAVEN_MSG: [&str; 4] = [
+	"Locked Out of Heaven!",
+	"Stairway to Heaven",
+	"[Heaven], are you WATCHING?",
+	"The Holy C",
+];
+
 #[derive(Parser)]
 #[clap(
-	name = NAME, version,
+	version,
 	about = "Print XOR (64-bit) checksums",
 	long_about = "If no FILES are given, or if FILE is \"-\", reads Standard Input",
 	group(ArgGroup::new("name").args(&["full", "brief"])),
@@ -21,7 +37,7 @@ const DIR_MSG: &str = "Is a directory";
 	group(ArgGroup::new("mode").args(&["std", "quirky"]))
 )]
 struct Cli {
-	/// Hash size in bytes (prior to hex-encoding)
+	/// Digest size in bytes (prior to hex-encoding)
 	#[clap(short, long, default_value_t = DEFAULT_SIZE, value_parser)]
 	length: usize,
 
@@ -53,9 +69,15 @@ struct Cli {
 	#[clap(long, action)]
 	quirky: bool,
 
-	/// UT typo easter egg
 	#[clap(long, action)]
 	hell: bool,
+	#[clap(long, action)]
+	heaven: bool,
+
+	#[clap(long, action)]
+	hello: bool,
+	#[clap(long = "olé!", action)]
+	olé: bool,
 
 	/// Files to hash
 	#[clap(value_parser)]
@@ -70,7 +92,20 @@ fn main() -> std::io::Result<()> {
 	}
 
 	if cli.hell {
-		println!("I can't go to hell. I'm all out of vacation days.");
+		println!("{}", HELL_MSG[fastrand::usize(..HELL_MSG.len())]);
+		return Ok(());
+	}
+	if cli.heaven {
+		println!("{}", HEAVEN_MSG[fastrand::usize(..HEAVEN_MSG.len())]);
+		return Ok(());
+	}
+
+	if cli.hello {
+		println!("world!");
+		return Ok(());
+	}
+	if cli.olé {
+		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
 		return Ok(());
 	}
 
