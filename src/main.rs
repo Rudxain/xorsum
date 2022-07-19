@@ -124,16 +124,13 @@ fn main() -> std::io::Result<()> {
 			)
 		}
 	} else {
-		//lol, I noticed this says "pain"
-		for p_a in cli.file {
-			let path = std::path::Path::new(&p_a);
+		for path in cli.file {
 			let h = Path::new("-");
-			if path.is_file() || p_a == h {
-				sbox = if p_a == h {
+			if path.is_file() || path == h {
+				sbox = if path == h {
 					xor_hasher(stdin().bytes(), sbox)
 				} else {
-					//I hope this uses a buffer to prevent RAM from exploding
-					xor_hasher(std::fs::File::open(&p_a)?.bytes(), sbox)
+					xor_hasher(std::io::BufReader::new(std::fs::File::open(&path)?).bytes(), sbox)
 				};
 
 				if cli.raw {
@@ -144,7 +141,7 @@ fn main() -> std::io::Result<()> {
 					if cli.brief {
 						println!("{hex}")
 					} else {
-						println!("{hex} {}", p_a.display())
+						println!("{hex} {}", path.display())
 					}
 				}
 			} else {
@@ -153,7 +150,7 @@ fn main() -> std::io::Result<()> {
 						{
 							format!(
 								"{NAME}: {}: {}\n",
-								p_a.display(),
+								path.display(),
 								if path.is_dir() { DIR_MSG } else { NO_FILE_MSG }
 							)
 						}
