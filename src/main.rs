@@ -1,6 +1,7 @@
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 use clap::{ArgGroup, Parser};
 use std::io::{stdin, stdout, Read, Write};
+use std::path::{Path, PathBuf};
 use xorsum::*;
 
 const NAME: &str = "xorsum";
@@ -58,15 +59,13 @@ struct Cli {
 
 	/// Files to hash
 	#[clap(value_parser)]
-	file: Vec<String>
+	file: Vec<PathBuf>,
 }
 
 fn main() -> std::io::Result<()> {
 	let cli = Cli::parse();
 
-	if (cli.full && cli.brief) ||
-	(cli.lower && cli.upper) ||
-	(cli.hex && cli.raw) {
+	if (cli.full && cli.brief) || (cli.lower && cli.upper) || (cli.hex && cli.raw) {
 		unreachable!()
 	}
 
@@ -93,8 +92,9 @@ fn main() -> std::io::Result<()> {
 		//lol, I noticed this says "pain"
 		for p_a in cli.file {
 			let path = std::path::Path::new(&p_a);
-			if path.is_file() || p_a == "-" {
-				sbox = if p_a == "-" {
+			let h = Path::new("-");
+			if path.is_file() || p_a == h {
+				sbox = if p_a == h {
 					xor_hasher(stdin().bytes(), sbox)
 				} else {
 					//I hope this uses a buffer to prevent RAM from exploding
@@ -109,7 +109,7 @@ fn main() -> std::io::Result<()> {
 					if cli.brief {
 						println!("{hex}")
 					} else {
-						println!("{hex} {p_a}")
+						println!("{hex} {}", p_a.display())
 					}
 				}
 			} else {
@@ -117,7 +117,8 @@ fn main() -> std::io::Result<()> {
 					.write_all(
 						{
 							format!(
-								"{NAME}: {p_a}: {}\n",
+								"{NAME}: {}: {}\n",
+								p_a.display(),
 								if path.is_dir() { DIR_MSG } else { NO_FILE_MSG }
 							)
 						}
