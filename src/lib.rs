@@ -13,13 +13,12 @@ pub fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 
 pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 	bytes: T,
-	mut key: Vec<u8>,
-) -> Vec<u8> {
+	key: &mut Vec<u8>,
+) {
 	let l = key.len();
 	if l > 0 {
 		for (i, b) in bytes.enumerate() {
 			key[i % l] ^= b.unwrap();
 		}
 	}
-	key
 }

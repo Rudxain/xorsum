@@ -1,6 +1,6 @@
 [package]
 name = "xorsum"
-version = "3.1.1"
+version = "3.1.2"
 edition = "2021"
 description = "Get XOR hash/digest with this command-line tool"
 keywords = ["checksum", "hash", "xor", "file", "data"]

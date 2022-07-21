@@ -113,7 +113,7 @@ fn main() -> std::io::Result<()> {
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
 	if cli.file.len() == 0 {
-		sbox = xor_hasher(stdin().bytes(), sbox);
+		xor_hasher(stdin().bytes(), &mut sbox);
 		if cli.raw {
 			stdout().write_all(&sbox).unwrap()
 		} else {
@@ -127,11 +127,11 @@ fn main() -> std::io::Result<()> {
 		for path in cli.file {
 			let h = Path::new("-");
 			if path.is_file() || path == h {
-				sbox = if path == h {
-					xor_hasher(stdin().bytes(), sbox)
+				if path == h {
+					xor_hasher(stdin().bytes(), &mut sbox)
 				} else {
-					xor_hasher(std::io::BufReader::new(std::fs::File::open(&path)?).bytes(), sbox)
-				};
+					xor_hasher(std::io::BufReader::new(std::fs::File::open(&path)?).bytes(), &mut sbox)
+				}
 
 				if cli.raw {
 					stdout().write_all(&sbox).unwrap();
