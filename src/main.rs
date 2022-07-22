@@ -5,13 +5,9 @@ use std::{
 	path::{Path, PathBuf},
 };
 use xorsum::*;
-use fastrand;
 
 const NAME: &str = "xorsum";
 const DEFAULT_SIZE: usize = 8;
-
-const NO_FILE_MSG: &str = "No such file or directory";
-const DIR_MSG: &str = "Is a directory";
 
 const HELL_MSG: [&str; 4] = [
 	"I can't go to hell. I'm all out of vacation days.",
@@ -41,7 +37,7 @@ struct Cli {
 	#[clap(short, long, default_value_t = DEFAULT_SIZE, value_parser)]
 	length: usize,
 
-	/// Revert --brief in --quirky mode
+	/// Revert --brief in quirky mode
 	#[clap(short, long, action)]
 	full: bool,
 	/// Only print hash, no filenames
@@ -55,14 +51,14 @@ struct Cli {
 	#[clap(short = 'A', long = "UPPER", action)]
 	upper: bool,
 
-	/// Revert --raw in --quirky mode
+	/// Revert --raw in quirky mode
 	#[clap(short = 'x', long, action)]
 	hex: bool,
 	/// Print raw bytes, not hex
 	#[clap(short, long, action)]
 	raw: bool,
 
-	/// Standard GNU core-utils compliant mode
+	/// Standard GNU core-utils compliant mode (default)
 	#[clap(long, action)]
 	std: bool,
 	/// Non-std compatibility-breaking enhanced functionality
@@ -92,11 +88,11 @@ fn main() -> std::io::Result<()> {
 	}
 
 	if cli.hell {
-		println!("{}", HELL_MSG[fastrand::usize(..HELL_MSG.len())]);
+		println!("{}", HELL_MSG[rng(HELL_MSG.len())]);
 		return Ok(());
 	}
 	if cli.heaven {
-		println!("{}", HEAVEN_MSG[fastrand::usize(..HEAVEN_MSG.len())]);
+		println!("{}", HEAVEN_MSG[rng(HEAVEN_MSG.len())]);
 		return Ok(());
 	}
 
@@ -130,7 +126,10 @@ fn main() -> std::io::Result<()> {
 				if path == h {
 					xor_hasher(stdin().bytes(), &mut sbox)
 				} else {
-					xor_hasher(std::io::BufReader::new(std::fs::File::open(&path)?).bytes(), &mut sbox)
+					xor_hasher(
+						std::io::BufReader::new(std::fs::File::open(&path)?).bytes(),
+						&mut sbox,
+					)
 				}
 
 				if cli.raw {
@@ -151,7 +150,11 @@ fn main() -> std::io::Result<()> {
 							format!(
 								"{NAME}: {}: {}\n",
 								path.display(),
-								if path.is_dir() { DIR_MSG } else { NO_FILE_MSG }
+								if path.is_dir() {
+									"Is a directory"
+								} else {
+									"No such file or directory"
+								}
 							)
 						}
 						.as_bytes(),

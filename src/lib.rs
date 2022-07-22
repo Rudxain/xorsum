@@ -22,3 +22,10 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 		}
 	}
 }
+
+pub fn rng(m: usize) -> usize {
+	std::time::SystemTime::now()
+		.duration_since(std::time::UNIX_EPOCH)
+		.unwrap()
+		.as_millis() as usize % m
+}
