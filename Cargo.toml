@@ -10,3 +10,8 @@ repository = "https://github.com/Rudxain/xorsum"
 
 [dependencies]
 clap = { version = "3.2.12", features = ["derive"] }
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1

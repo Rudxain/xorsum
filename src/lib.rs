@@ -23,9 +23,14 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 	}
 }
 
-pub fn rng(m: usize) -> usize {
+fn rng(m: usize) -> usize {
 	std::time::SystemTime::now()
 		.duration_since(std::time::UNIX_EPOCH)
 		.unwrap()
-		.as_millis() as usize % m
+		.as_millis() as usize
+		% m
+}
+
+pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
+	arr[rng(arr.len())]
 }

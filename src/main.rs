@@ -1,13 +1,14 @@
 //I don't want to pollute the global scope, so I'll use `use` sparingly
 use clap::{ArgGroup, Parser};
 use std::{
-	io::{stdin, stdout, Read, Write},
+	io::{stdin, stdout, BufReader, Read, Write},
 	path::{Path, PathBuf},
 };
 use xorsum::*;
 
 const NAME: &str = "xorsum";
-const DEFAULT_SIZE: usize = 8;
+const DEFAULT_LEN: usize = 8;
+const BUF_LEN: usize = 1 << 16;
 
 const HELL_MSG: [&str; 4] = [
 	"I can't go to hell. I'm all out of vacation days.",
@@ -34,7 +35,7 @@ const HEAVEN_MSG: [&str; 4] = [
 )]
 struct Cli {
 	/// Digest size in bytes (prior to hex-encoding)
-	#[clap(short, long, default_value_t = DEFAULT_SIZE, value_parser)]
+	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
 	/// Revert --brief in quirky mode
@@ -88,11 +89,11 @@ fn main() -> std::io::Result<()> {
 	}
 
 	if cli.hell {
-		println!("{}", HELL_MSG[rng(HELL_MSG.len())]);
+		println!("{}", rand_pick(&HELL_MSG));
 		return Ok(());
 	}
 	if cli.heaven {
-		println!("{}", HEAVEN_MSG[rng(HEAVEN_MSG.len())]);
+		println!("{}", rand_pick(&HEAVEN_MSG));
 		return Ok(());
 	}
 
@@ -109,7 +110,10 @@ fn main() -> std::io::Result<()> {
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
 	if cli.file.len() == 0 {
-		xor_hasher(stdin().bytes(), &mut sbox);
+		xor_hasher(
+			BufReader::with_capacity(BUF_LEN, stdin()).bytes(),
+			&mut sbox,
+		);
 		if cli.raw {
 			stdout().write_all(&sbox).unwrap()
 		} else {
@@ -124,10 +128,11 @@ fn main() -> std::io::Result<()> {
 			let h = Path::new("-");
 			if path.is_file() || path == h {
 				if path == h {
+					//JIC, avoid creating multiple BRs on the same stdin
 					xor_hasher(stdin().bytes(), &mut sbox)
 				} else {
 					xor_hasher(
-						std::io::BufReader::new(std::fs::File::open(&path)?).bytes(),
+						BufReader::with_capacity(BUF_LEN, std::fs::File::open(&path)?).bytes(),
 						&mut sbox,
 					)
 				}
