@@ -25,6 +25,8 @@ This is the most recent version. Compilation isn't guaranteed. Semver may be bro
 
 To get an already-compiled non-dev executable, go to [GH releases](https://github.com/Rudxain/xorsum/releases).
 
+For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903)
+
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
 ```sh
 xorsum [OPTIONS] [FILE]...
