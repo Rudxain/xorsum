@@ -15,12 +15,14 @@ pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
 	bytes: T,
 	key: &mut Vec<u8>,
 ) {
-	let l = key.len();
-	if l > 0 {
-		for (i, b) in bytes.enumerate() {
-			key[i % l] ^= b.unwrap();
-		}
-	}
+	(0..key.len())
+		.cycle()
+		.zip(bytes)
+		.for_each(|(kb_idx, b)| {
+			//Safety: We are using `kb_idx` to index into the key
+			//and it is bound between 0 and key.len()
+			*unsafe { key.get_unchecked_mut(kb_idx) } ^= b.as_ref().unwrap();
+		})
 }
 
 fn rng(m: usize) -> usize {
