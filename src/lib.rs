@@ -11,18 +11,15 @@ pub fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	hex
 }
 
-pub fn xor_hasher<T: std::iter::Iterator<Item = Result<u8, std::io::Error>>>(
-	bytes: T,
-	key: &mut Vec<u8>,
+pub fn xor_hasher(
+	bytes: &[u8],
+	key: &mut [u8],
 ) {
-	(0..key.len())
-		.cycle()
-		.zip(bytes)
-		.for_each(|(kb_idx, b)| {
-			//Safety: We are using `kb_idx` to index into the key
-			//and it is bound between 0 and key.len()
-			*unsafe { key.get_unchecked_mut(kb_idx) } ^= b.as_ref().unwrap();
-		})
+	for chunk in bytes.chunks(key.len()) {
+		chunk.iter()
+			.zip(&mut *key)
+			.for_each(|(&b, k)| *k ^= b);
+	}
 }
 
 fn rng(m: usize) -> usize {
