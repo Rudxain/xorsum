@@ -2,13 +2,13 @@
 use clap::{ArgGroup, Parser};
 use std::{
 	io::{stdin, stdout, BufRead, BufReader, Read, Write},
-	path::{Path, PathBuf}
+	path::{Path, PathBuf},
 };
 use xorsum::*;
 
 const NAME: &str = "xorsum";
 const DEFAULT_LEN: usize = 8;
-const BUF_LEN: usize = 1 << 16;
+const DEFAULT_BUF_LEN: usize = 1 << 16;
 
 const HELL_MSG: [&str; 4] = [
 	"I can't go to hell. I'm all out of vacation days.",
@@ -82,29 +82,27 @@ struct Cli {
 }
 
 fn read_stream(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
-	// While Stdin does just use a BufReader internally, it uses the default length.
-	// The problem with that is that the sbox length is controllable by the user,
-	// which means we have no guarantee that the buffer length will be a multiple
-	// of sbox.len, which means that we could end up overusing the start of sbox
-	// instead of spreading the bytes as evenly as possible.
+	let l = sbox.len();
+	if l == 0 {return Ok(())} //avoid div by 0
+	/*
+	While Stdin just uses a BufReader internally, it uses the default length.
+	The problem is that the sbox length is controllable by the user,
+	so there's no guarantee that the buf length will be a multiple of sbox.len,
+	which means that we could end up overusing the start of sbox
+	instead of spreading the bytes as evenly as possible.
 
-	// To handle the length issue, we'll just create our own BufReader with a controlled
-	// length. It will result in double-buffering stdin, but I don't know a better way
-	// that.
-	let buffer_len = if sbox.len() < BUF_LEN {
-		let multiples = match (BUF_LEN / sbox.len(), BUF_LEN % sbox.len()) {
-			(whole, 0) => whole,
-			(whole, _) => whole + 1
-		};
-
-		multiples * sbox.len()
+	To handle the length issue, we'll just create our own BufReader with a controlled
+	length. It will result in double-buffering stdin, but we don't know a better way than that.
+	*/
+	let buf_len = if DEFAULT_BUF_LEN > l {
+		ceil_to_near(DEFAULT_BUF_LEN, l)
 	} else {
-		sbox.len()
+		l
 	};
 
-	// We create the buffer in here so that the stdin read can be buffered in a way
-	// because it lets us control the length of the buffer.
-	let mut reader = BufReader::with_capacity(buffer_len, stream);
+	//We create the buffer in here so that the stdin read can be buffered in a way
+	//because it lets us control the length of the buffer.
+	let mut reader = BufReader::with_capacity(buf_len, stream);
 	loop {
 		let read_buf = reader.fill_buf()?;
 		let read_len = read_buf.len();
@@ -147,11 +145,8 @@ fn main() -> std::io::Result<()> {
 	//allocate once, reuse everywhere
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
-	if cli.file.len() == 0 {
-		read_stream(
-			stdin().lock(),
-			&mut sbox,
-		)?;
+	if cli.file.is_empty() {
+		read_stream(stdin().lock(), &mut sbox)?;
 		if cli.raw {
 			stdout().write_all(&sbox).unwrap()
 		} else {
@@ -169,10 +164,7 @@ fn main() -> std::io::Result<()> {
 					//JIC, avoid creating multiple BRs on the same stdin
 					read_stream(stdin().lock(), &mut sbox)?;
 				} else {
-					read_stream(
-						std::fs::File::open(&path)?,
-						&mut sbox,
-					)?;
+					read_stream(std::fs::File::open(&path)?, &mut sbox)?;
 				}
 
 				if cli.raw {

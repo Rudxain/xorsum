@@ -1,3 +1,15 @@
+fn ceil_div(n: usize, d: usize) -> usize {
+	match (n / d, n % d) {
+		(q, 0) => q,
+		(q, _) => q + 1,
+	}
+}
+
+//round `n` to +Infinity, to nearest multiple of `d`
+pub fn ceil_to_near(n: usize, d: usize) -> usize {
+	ceil_div(n, d) * d
+}
+
 //why isn't this in `std`?
 pub fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::new();
@@ -11,14 +23,9 @@ pub fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
 	hex
 }
 
-pub fn xor_hasher(
-	bytes: &[u8],
-	key: &mut [u8],
-) {
+pub fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 	for chunk in bytes.chunks(key.len()) {
-		chunk.iter()
-			.zip(&mut *key)
-			.for_each(|(&b, k)| *k ^= b);
+		chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
 	}
 }
 
