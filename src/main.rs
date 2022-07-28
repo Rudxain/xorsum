@@ -95,7 +95,7 @@ fn read_stream(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	length. It will result in double-buffering stdin, but we don't know a better way than that.
 	*/
 	let buf_len = if DEFAULT_BUF_LEN > l {
-		ceil_to_near(DEFAULT_BUF_LEN, l)
+		ceil_to_multiple(DEFAULT_BUF_LEN, l)
 	} else {
 		l
 	};
