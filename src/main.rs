@@ -1,27 +1,9 @@
-//I don't want to pollute the global scope, so I'll use `use` sparingly
 use clap::{ArgGroup, Parser};
-use std::{
-	io::{stdin, stdout, BufRead, BufReader, Read, Write},
-	path::{Path, PathBuf},
-};
-use xorsum::*;
+use std::io::{stdin, stdout, Write};
+use xorsum::{bytevec_tohex, rand_pick, read_stream};
 
 const NAME: &str = "xorsum";
 const DEFAULT_LEN: usize = 8;
-const DEFAULT_BUF_LEN: usize = 1 << 16;
-
-const HELL_MSG: [&str; 4] = [
-	"I can't go to hell. I'm all out of vacation days.",
-	"Highway to Hell!",
-	"RIP N' TEAR",
-	"Son't eorry evrryone makez nistakes while typong",
-];
-const HEAVEN_MSG: [&str; 4] = [
-	"Locked Out of Heaven!",
-	"Stairway to Heaven",
-	"[Heaven], are you WATCHING?",
-	"The Holy C",
-];
 
 #[derive(Parser)]
 #[clap(
@@ -78,43 +60,7 @@ struct Cli {
 
 	/// Files to hash
 	#[clap(value_parser)]
-	file: Vec<PathBuf>,
-}
-
-fn read_stream(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
-	let l = sbox.len();
-	if l == 0 {return Ok(())} //avoid div by 0
-	/*
-	While Stdin just uses a BufReader internally, it uses the default length.
-	The problem is that the sbox length is controllable by the user,
-	so there's no guarantee that the buf length will be a multiple of sbox.len,
-	which means that we could end up overusing the start of sbox
-	instead of spreading the bytes as evenly as possible.
-
-	To handle the length issue, we'll just create our own BufReader with a controlled
-	length. It will result in double-buffering stdin, but we don't know a better way than that.
-	*/
-	let buf_len = if DEFAULT_BUF_LEN > l {
-		ceil_to_multiple(DEFAULT_BUF_LEN, l)
-	} else {
-		l
-	};
-
-	//We create the buffer in here so that the stdin read can be buffered in a way
-	//because it lets us control the length of the buffer.
-	let mut reader = BufReader::with_capacity(buf_len, stream);
-	loop {
-		let read_buf = reader.fill_buf()?;
-		let read_len = read_buf.len();
-		if read_len == 0 {
-			break;
-		}
-
-		xor_hasher(read_buf, sbox);
-		reader.consume(read_len);
-	}
-
-	Ok(())
+	file: Vec<std::path::PathBuf>,
 }
 
 fn main() -> std::io::Result<()> {
@@ -125,11 +71,27 @@ fn main() -> std::io::Result<()> {
 	}
 
 	if cli.hell {
-		println!("{}", rand_pick(&HELL_MSG));
+		println!(
+			"{}",
+			rand_pick(&[
+				"I can't go to hell. I'm all out of vacation days.",
+				"Highway to Hell!",
+				"RIP N' TEAR",
+				"Son't eorry evrryone makez nistakes while typong",
+			])
+		);
 		return Ok(());
 	}
 	if cli.heaven {
-		println!("{}", rand_pick(&HEAVEN_MSG));
+		println!(
+			"{}",
+			rand_pick(&[
+				"Locked Out of Heaven!",
+				"Stairway to Heaven",
+				"[Heaven], are you WATCHING?",
+				"The Holy C",
+			])
+		);
 		return Ok(());
 	}
 
@@ -158,7 +120,7 @@ fn main() -> std::io::Result<()> {
 		}
 	} else {
 		for path in cli.file {
-			let h = Path::new("-");
+			let h = std::path::Path::new("-");
 			if path.is_file() || path == h {
 				if path == h {
 					//JIC, avoid creating multiple BRs on the same stdin
