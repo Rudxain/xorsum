@@ -6,7 +6,6 @@ fn ceil_div(n: usize, d: usize) -> usize {
 		(q, _) => q + 1,
 	}
 }
-
 ///round `n` to +Infinity, to nearest multiple of `d`
 fn ceil_to_multiple(n: usize, d: usize) -> usize {
 	ceil_div(n, d) * d

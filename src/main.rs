@@ -1,6 +1,6 @@
 use clap::{ArgGroup, Parser};
 use std::io::{stdin, stdout, Write};
-use xorsum::{bytevec_tohex, rand_pick, read_stream};
+use xorsum::*;
 
 const NAME: &str = "xorsum";
 const DEFAULT_LEN: usize = 8;
