@@ -38,7 +38,7 @@ struct Cli {
 	#[clap(short = 'x', long, action)]
 	hex: bool,
 	/// Print raw bytes, not hex
-	#[clap(short, long, action)]
+	#[clap(short = 'r', long, action)]
 	raw: bool,
 
 	/// Standard GNU core-utils compliant mode (default)
