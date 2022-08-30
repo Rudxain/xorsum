@@ -98,4 +98,5 @@ There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that comp
 I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people with low-power devices.
 
 # ⚠DISCLAIMER
-**DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
+0. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
+1. This program is not production-ready. The version number should be `0.x.y` to reflect the incompleteness of the code. I'm sorry for the confusion
