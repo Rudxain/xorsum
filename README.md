@@ -25,7 +25,7 @@ This is the most recent version. Compilation isn't guaranteed. Semver may be bro
 
 To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64.
 
-For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903)
+For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903).
 
 Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
 ```sh
