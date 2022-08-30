@@ -20,7 +20,7 @@ struct Cli {
 	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
-	/// Opposite of brief (default)
+	/// Print hash + filename (default)
 	#[clap(short, long, action)]
 	full: bool,
 	/// Only print hash, no filenames
@@ -116,7 +116,7 @@ fn main() -> std::io::Result<()> {
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
 	if cli.file.is_empty() {
-		read_stream(stdin().lock(), &mut sbox)?;
+		stream_processor(stdin().lock(), &mut sbox)?;
 		if cli.raw {
 			stdout().write_all(&sbox).unwrap()
 		} else {
@@ -132,9 +132,9 @@ fn main() -> std::io::Result<()> {
 			if path.is_file() || path == h {
 				if path == h {
 					//JIC, avoid creating multiple BRs on the same stdin
-					read_stream(stdin().lock(), &mut sbox)?;
+					stream_processor(stdin().lock(), &mut sbox)?;
 				} else {
-					read_stream(std::fs::File::open(&path)?, &mut sbox)?;
+					stream_processor(std::fs::File::open(&path)?, &mut sbox)?;
 				}
 
 				if cli.raw {

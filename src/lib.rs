@@ -44,22 +44,23 @@ fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 	}
 }
 
-pub fn read_stream(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
+pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	let l = sbox.len();
+	//avoid div by 0
 	if l == 0 {
 		return Ok(());
-	} //avoid div by 0
-  /*
-  While Stdin just uses a BufReader internally, it uses the default length.
-  The problem is that the sbox length is controllable by the user,
-  so there's no guarantee that the buf length will be a multiple of sbox.len,
-  which means that we could end up overusing the start of sbox
-  instead of spreading the bytes as evenly as possible.
+	}
+	/*
+	While Stdin just uses a BufReader internally, it uses the default length.
+	The problem is that the sbox length is controllable by the user,
+	so there's no guarantee that the buf length will be a multiple of sbox.len,
+	which means that we could end up overusing the start of sbox
+	instead of spreading the bytes as evenly as possible.
 
-  To handle the length issue, we'll just create our own BufReader with a controlled
-  length. It will result in double-buffering stdin, but we don't know a better way than that.
-  */
-	const DEFAULT_BUF_LEN: usize = 1 << 16;
+	To handle the length issue, we'll just create our own BufReader with a controlled
+	length. It will result in double-buffering stdin, but we don't know a better way than that.
+	*/
+	const DEFAULT_BUF_LEN: usize = 1 << 0x10;
 	let buf_len = if DEFAULT_BUF_LEN > l {
 		ceil_to_multiple(DEFAULT_BUF_LEN, l)
 	} else {
