@@ -20,7 +20,7 @@ struct Cli {
 	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
-	/// Revert --brief in quirky mode
+	/// Opposite of brief (default)
 	#[clap(short, long, action)]
 	full: bool,
 	/// Only print hash, no filenames
@@ -34,7 +34,7 @@ struct Cli {
 	#[clap(short = 'A', long = "UPPER", action)]
 	upper: bool,
 
-	/// Revert --raw in quirky mode
+	/// Print hexadecimal digest (default)
 	#[clap(short = 'x', long, action)]
 	hex: bool,
 	/// Print raw bytes, not hex
@@ -57,6 +57,9 @@ struct Cli {
 	hello: bool,
 	#[clap(long = "olé!", action)]
 	olé: bool,
+
+	#[clap(long, action)]
+	rick: bool,
 
 	/// Files to hash
 	#[clap(value_parser)]
@@ -101,6 +104,11 @@ fn main() -> std::io::Result<()> {
 	}
 	if cli.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
+		return Ok(());
+	}
+
+	if cli.rick {
+		println!("We're no strangers to love...");
 		return Ok(());
 	}
 
