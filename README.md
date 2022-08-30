@@ -62,16 +62,8 @@ Note: `echo -n` has [different behavior depending on OS and binary version](http
 
 PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
-## Weird names
-What if you have a file named "-"?
-```sh
-echo bruh > -
-#to prevent interpretation as an `OPTION`, use "./" relative path
-xorsum ./-
-```
-
 ## Emulating AE
-`--length` **doesn't truncate** the digest:
+`--length` **doesn't truncate** the output:
 ```sh
 xorsum some_big_file -bl 3 #"00ff55"
 xorsum some_big_file -bl 2 #"69aa" NOT "00ff"
@@ -106,6 +98,4 @@ There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that comp
 I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people with low-power devices.
 
 # ⚠DISCLAIMER
-0. **DO NOT USE FOR 🔐CRYPTOGRAPHIC PURPOSES.** The algorithm is **not** crypto-secure.
-
-1. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
+**DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
