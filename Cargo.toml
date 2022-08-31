@@ -5,7 +5,7 @@ edition = "2021"
 description = "Get XOR hash/digest with this command-line tool"
 keywords = ["checksum", "hash", "xor", "file", "data"]
 categories = ["command-line-utilities", "algorithms"]
-license = "Unlicense"
+license = "AGPL-3.0-or-later"
 repository = "https://github.com/Rudxain/xorsum"
 
 [dependencies]
