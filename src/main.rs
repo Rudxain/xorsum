@@ -12,8 +12,7 @@ const DEFAULT_LEN: usize = 8;
 	long_about = "If no FILES are given, or if FILE is \"-\", reads Standard Input",
 	group(ArgGroup::new("name").args(&["full", "brief"])),
 	group(ArgGroup::new("case").args(&["lower", "upper"])),
-	group(ArgGroup::new("code").args(&["hex", "raw"])),
-	group(ArgGroup::new("mode").args(&["std", "quirky"]))
+	group(ArgGroup::new("code").args(&["hex", "raw"]))
 )]
 struct Cli {
 	/// Digest size in bytes (prior to hex-encoding)
@@ -40,13 +39,6 @@ struct Cli {
 	/// Print raw bytes, not hex
 	#[clap(short = 'r', long, action)]
 	raw: bool,
-
-	/// Standard GNU core-utils compliant mode (default)
-	#[clap(long, action)]
-	std: bool,
-	/// Non-std compatibility-breaking enhanced functionality
-	#[clap(long, action)]
-	quirky: bool,
 
 	#[clap(long, action)]
 	hell: bool,
