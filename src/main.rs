@@ -1,6 +1,8 @@
 use clap::{ArgGroup, Parser};
 use std::io::{stdin, stdout, Write};
-use xorsum::*;
+
+mod module;
+use crate::module::*;
 
 const NAME: &str = "xorsum";
 const DEFAULT_LEN: usize = 8;
