@@ -1,0 +1,22 @@
+single-char-binding-names-threshold = 3
+too-large-for-stack = 256
+
+# array-size-threshold
+# enum-variant-size-threshold
+# too-many-arguments-threshold
+# literal-representation-threshold
+# too-many-lines-threshold
+# await-holding-invalid-types
+# max-fn-params-bools
+# trivial-copy-size-limit
+# max-include-file-size
+# type-complexity-threshold
+# max-struct-bools
+# unreadable-literal-lint-fractions
+# cognitive-complexity-threshold
+# max-suggested-slice-pattern-length
+# cyclomatic-complexity-threshold
+# max-trait-bounds
+# vec-box-size-threshold
+# verbose-bit-mask-threshold
+# disallowed-types
