@@ -8,7 +8,7 @@ The raw digest size is 64bit (8Byte) by default, but can be set to any valid `us
 
 The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
-Both the naming and behavior are influenced by [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
+Name and behavior are influenced by [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 # Usage
 To install latest release from [crates.io](https://crates.io) registry:
@@ -21,9 +21,9 @@ To install latest dev crate from GH:
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
-This is the most recent version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
+This is the **most recent** version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
 
-To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64. These **aren't setup/installer** programs, these are the same executables `cargo` would install, so you should open them from a terminal CLI, not click them.
+To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64. These **aren't setup/installer** programs, these are the same executables `cargo` would install, so you should run them from a terminal CLI, not click them.
 
 For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903).
 
@@ -62,7 +62,7 @@ Note: `echo -n` has [different behavior depending on OS and binary version](http
 
 PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
-## Emulating AE
+## Emulating 🏔AE
 `--length` **doesn't truncate** the output:
 ```sh
 xorsum some_big_file -bl 3 #"00ff55"
@@ -71,7 +71,7 @@ xorsum some_big_file -bl 2 #"69aa" NOT "00ff"
 As you can see, `-l` can return very different hashes from the same input. This property can be exploited to emulate the Avalanche Effect (to some extent).
 
 ## Finding corrupted bytes
-If you have 2 copies of a file and 1 is corrupted, you can attempt to ["triangulate"](https://en.wikipedia.org/wiki/Triangulation) the index of a corrupted byte, without manually searching the entire file. This is useful when dealing with big raw-binary files
+If you have 2 copies of a file and 1 is corrupted, you can attempt to ["🔺️triangulate"](https://en.wikipedia.org/wiki/Triangulation) the index of a corrupted byte, without manually searching the entire file. This is useful when dealing with big raw-binary files
 ```sh
 xorsum a b
 #"6c741b7863326b2c a"
@@ -92,11 +92,11 @@ xorsum a b -l 2
 #you can repeat this process with different `-l` values, to solve it easier.
 #IIRC, using primes gives you more info about the index
 ```
-There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs).
+There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs) 🤓.
 
 # Personal thoughts
 I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people with low-power devices.
 
 # ⚠DISCLAIMER
 0. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to "mix well".
-1. This program is not production-ready. The version number should be `0.x.y` to reflect the incompleteness of the code. I'm sorry for the confusion
+1. This program is **not production-ready**. The version should be `0.x.y` to reflect the incompleteness of the code. I'm sorry for the confusion, and sorry for any inconvenience
