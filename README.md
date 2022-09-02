@@ -27,7 +27,7 @@ To get already-compiled non-dev executables, go to [GH releases](https://github.
 
 For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903).
 
-Argument "syntax" (any order is allowed, but it's good practice to place options near each other):
+Argument "syntax":
 ```sh
 xorsum [OPTIONS] [FILE]...
 ```
