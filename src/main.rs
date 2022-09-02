@@ -112,7 +112,7 @@ fn main() -> std::io::Result<()> {
 	if cli.file.is_empty() {
 		stream_processor(stdin().lock(), &mut sbox)?;
 		if cli.raw {
-			stdout().write_all(&sbox).unwrap()
+			stdout().lock().write_all(&sbox).unwrap()
 		} else {
 			println!(
 				"{}{}",
@@ -132,7 +132,7 @@ fn main() -> std::io::Result<()> {
 				}
 
 				if cli.raw {
-					stdout().write_all(&sbox).unwrap();
+					stdout().lock().write_all(&sbox).unwrap();
 					println!("{}", if cli.brief { "" } else { " -" })
 				} else {
 					let hex = bytevec_tohex(&sbox, cli.upper);
