@@ -1,18 +1,18 @@
 use std::io::{BufRead, BufReader, Read};
 
-fn ceil_div(n: usize, d: usize) -> usize {
+fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
 		(q, 0) => q,
 		(q, _) => q + 1,
 	}
 }
 ///round `n` to +Infinity, to nearest multiple of `d`
-fn ceil_to_multiple(n: usize, d: usize) -> usize {
-	ceil_div(n, d) * d
+fn next_multiple(n: usize, d: usize) -> usize {
+	div_ceil(n, d) * d
 }
 
 //why isn't this in `core`?
-pub fn bytevec_tohex(vector: &Vec<u8>, upper: bool) -> String {
+pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::new();
 	for byte in vector {
 		hex += &(if upper {
@@ -33,7 +33,7 @@ fn rng(m: usize) -> usize {
 		% m
 }
 
-///get a random string from a string-array
+///get a random string from an array
 pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
 	arr[rng(arr.len())]
 }
@@ -45,9 +45,9 @@ fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 }
 
 pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
-	let l = sbox.len();
+	let len = sbox.len();
 	//avoid div by 0
-	if l == 0 {
+	if len == 0 {
 		return Ok(());
 	}
 	/*
@@ -61,10 +61,10 @@ pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<(
 	length. It will result in double-buffering stdin, but we don't know a better way than that.
 	*/
 	const DEFAULT_BUF_LEN: usize = 1 << 0x10;
-	let buf_len = if DEFAULT_BUF_LEN > l {
-		ceil_to_multiple(DEFAULT_BUF_LEN, l)
+	let buf_len = if DEFAULT_BUF_LEN > len {
+		next_multiple(DEFAULT_BUF_LEN, len)
 	} else {
-		l
+		len
 	};
 
 	//We create the buffer in here so that the stdin read can be buffered in a way

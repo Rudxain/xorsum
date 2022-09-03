@@ -112,19 +112,22 @@ fn main() -> std::io::Result<()> {
 	if cli.file.is_empty() {
 		stream_processor(stdin().lock(), &mut sbox)?;
 		if cli.raw {
-			stdout().lock().write_all(&sbox).unwrap()
+			stdout().lock().write_all(&sbox)?
 		} else {
 			println!(
 				"{}{}",
-				bytevec_tohex(&sbox, cli.upper),
+				u8vec_to_hex(&sbox, cli.upper),
 				if cli.brief { "" } else { " -" }
 			)
 		}
 	} else {
+		let mut stdout_v = stdout();
+		let mut lock = stdout_v.lock();
+
 		for path in cli.file {
-			let h = std::path::Path::new("-");
-			if path.is_file() || path == h {
-				if path == h {
+			let hyphen = std::path::Path::new("-");
+			if path.is_file() || path == hyphen {
+				if path == hyphen {
 					//JIC, avoid creating multiple BRs on the same stdin
 					stream_processor(stdin().lock(), &mut sbox)?;
 				} else {
@@ -132,33 +135,31 @@ fn main() -> std::io::Result<()> {
 				}
 
 				if cli.raw {
-					stdout().lock().write_all(&sbox).unwrap();
-					println!("{}", if cli.brief { "" } else { " -" })
+					stdout_v.write_all(&sbox)?;
+					writeln!(lock, "{}", if cli.brief { "" } else { " -" })?
 				} else {
-					let hex = bytevec_tohex(&sbox, cli.upper);
+					let hex = u8vec_to_hex(&sbox, cli.upper);
 					if cli.brief {
-						println!("{hex}")
+						writeln!(lock, "{hex}")?
 					} else {
-						println!("{hex} {}", path.display())
+						writeln!(lock, "{hex} {}", path.display())?
 					}
 				}
 			} else {
-				std::io::stderr()
-					.write_all(
-						{
-							format!(
-								"{NAME}: {}: {}\n",
-								path.display(),
-								if path.is_dir() {
-									"Is a directory"
-								} else {
-									"No such file or directory"
-								}
-							)
-						}
-						.as_bytes(),
-					)
-					.unwrap();
+				std::io::stderr().lock().write_all(
+					{
+						format!(
+							"{NAME}: {}: {}\n",
+							path.display(),
+							if path.is_dir() {
+								"Is a directory"
+							} else {
+								"No such file or directory"
+							}
+						)
+					}
+					.as_bytes(),
+				)?;
 			}
 			sbox.fill(0) //reset
 		}

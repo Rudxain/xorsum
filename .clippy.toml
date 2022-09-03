@@ -1,6 +1,8 @@
 single-char-binding-names-threshold = 3
 too-large-for-stack = 256
 
+# I haven't read about the following, that's why they're unused:
+
 # array-size-threshold
 # enum-variant-size-threshold
 # too-many-arguments-threshold
