@@ -13,7 +13,7 @@ fn next_multiple(n: usize, d: usize) -> usize {
 
 //why isn't this in `core`?
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
-	let mut hex = String::new();
+	let mut hex = String::with_capacity(vector.length() * 2);
 	for byte in vector {
 		hex += &(if upper {
 			format!("{byte:02X}")
