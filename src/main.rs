@@ -63,13 +63,9 @@ struct Cli {
 	file: Vec<path::PathBuf>,
 }
 
-fn main() -> std::io::Result<()> {
-	let cli = Cli::parse();
-
-	if (cli.full && cli.brief) || (cli.lower && cli.upper) || (cli.hex && cli.raw) {
-		unreachable!()
-	}
-
+/// easter-egg handler, lmao.
+/// if it detects any egg, returns true, otherwise false
+fn egg_cooker(cli: &Cli) -> bool {
 	let mut egg = false;
 
 	//is there some way to convert all these `ifs` into a single `match`?
@@ -110,7 +106,18 @@ fn main() -> std::io::Result<()> {
 		egg = true
 	}
 
-	if egg {return Ok(())}
+	egg
+}
+
+fn main() -> std::io::Result<()> {
+	let cli = Cli::parse();
+
+	if (cli.full && cli.brief) || (cli.lower && cli.upper) || (cli.hex && cli.raw) {
+		unreachable!()
+	}
+
+	//if any egg is activated, no work should be done
+	if egg_cooker(&cli) {return Ok(())}
 
 	//allocate once, reuse everywhere
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0

@@ -3,18 +3,26 @@ use std::{
 	time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
+/// `ceil`ed division
+///
+/// `n` is the numerator/dividend
+///
+/// `d` is the denominator/divisor
 fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
 		(q, 0) => q,
 		(q, _) => q + 1,
 	}
 }
-///round `n` to +Infinity, to nearest multiple of `d`
+///round `n` to nearest multiple of `d` (biased to +Infinity)
 fn next_multiple(n: usize, d: usize) -> usize {
 	div_ceil(n, d) * d
 }
 
 //why isn't this in `core`?
+/// convert a byte-vector to its hex-encoded expansion
+///
+/// `upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::with_capacity(vector.len() * 2);
 	for byte in vector {
@@ -27,7 +35,9 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	hex
 }
 
-///a crappy non-seedable PRNG
+/// a crappy non-seedable PRNG based on sys time
+///
+/// returns 0 instead of `panic`king
 fn rng(m: usize) -> usize {
 	SystemTime::now()
 		.duration_since(UNIX_EPOCH)
@@ -36,17 +46,23 @@ fn rng(m: usize) -> usize {
 		% m
 }
 
-///get a random string from an array
+///get a pseudo-random `str`ing from an `Array`
 pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
 	arr[rng(arr.len())]
 }
 
+/// digests a byte-array into a vector
+///
+/// `bytes` is the data to be hashed
+///
+/// `key` is a reference to a state-box in which the hash result is XOR-ed into
 fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 	for chunk in bytes.chunks(key.len()) {
 		chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
 	}
 }
 
+/// `xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	let len = sbox.len();
 	//avoid div by 0

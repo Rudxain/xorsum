@@ -16,4 +16,3 @@ strip = true
 lto = true
 codegen-units = 1
 #opt-level = 3 #to-do: try different values
-#target-cpu = native #IDK if this should be here
