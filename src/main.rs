@@ -145,8 +145,7 @@ fn main() -> std::io::Result<()> {
 				//avoid creating multiple BRs on the same stdin (just in case)
 				stream_processor(stdin().lock(), &mut sbox)?;
 			} else {
-				let file = std::fs::File::open(&path);
-				match file {
+				match std::fs::File::open(&path) {
 					Ok(f) => stream_processor(f, &mut sbox)?,
 					Err(e) => {
 						std::io::stderr().lock().write_all(
