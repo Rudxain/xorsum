@@ -1,4 +1,7 @@
-use std::io::{BufRead, BufReader, Read};
+use std::{
+	io::{BufRead, BufReader, Read},
+	time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
 fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
@@ -26,9 +29,9 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 
 ///a crappy non-seedable PRNG
 fn rng(m: usize) -> usize {
-	std::time::SystemTime::now()
-		.duration_since(std::time::UNIX_EPOCH)
-		.unwrap()
+	SystemTime::now()
+		.duration_since(UNIX_EPOCH)
+		.unwrap_or(Duration::new(0, 0))
 		.as_millis() as usize
 		% m
 }
