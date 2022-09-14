@@ -66,7 +66,7 @@ struct Cli {
 /// easter-egg handler, lmao.
 /// if it detects any egg, returns true, otherwise false
 fn egg_cooker(cli: &Cli) -> bool {
-	let mut egg = false;
+	let mut any = false;
 
 	//is there some way to convert all these `ifs` into a single `match`?
 	if cli.hell {
@@ -79,7 +79,7 @@ fn egg_cooker(cli: &Cli) -> bool {
 				"Son't eorry evrryone makez nistakes while typong",
 			])
 		);
-		egg = true
+		any = true
 	}
 	if cli.heaven {
 		println!(
@@ -91,22 +91,22 @@ fn egg_cooker(cli: &Cli) -> bool {
 				"The Holy C",
 			])
 		);
-		egg = true
+		any = true
 	}
 	if cli.hello {
 		println!("world!");
-		egg = true
+		any = true
 	}
 	if cli.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
-		egg = true
+		any = true
 	}
 	if cli.rick {
 		println!("We're no strangers to love...");
-		egg = true
+		any = true
 	}
 
-	egg
+	any
 }
 
 fn main() -> std::io::Result<()> {
@@ -139,11 +139,9 @@ fn main() -> std::io::Result<()> {
 		let mut stdout_v = stdout();
 		let mut lock = stdout_v.lock();
 
-		//is there a better way to compare paths and strings?
-		let hyphen = path::Path::new("-");
-
 		for path in cli.file {
-			if path == hyphen {
+			//is there a better way to compare paths and strings?
+			if path == path::Path::new("-") {
 				//avoid creating multiple BRs on the same stdin (just in case)
 				stream_processor(stdin().lock(), &mut sbox)?;
 			} else {
