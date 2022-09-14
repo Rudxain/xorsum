@@ -3,27 +3,24 @@ use std::{
 	time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-/// Calculates the quotient of `n` and `d`, rounding towards +infinity.
+///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
-/// `n` is the numerator/dividend
+///`n` is the numerator/dividend
 ///
-/// `d` is the denominator/divisor
+///`d` is the denominator/divisor
 ///
-/// # Panics
+///# Panics
+///If `d` is 0 (maybe also when overflow).
 ///
-/// If `d` is 0 (maybe also when overflow).
+///# Examples
+///Basic usage:
+///```
+///let a = 8;
+///let b = 3;
 ///
-/// # Examples
-///
-/// Basic usage:
-///
-/// ```
-/// let a = 8;
-/// let b = 3;
-///
-/// assert_eq!(div_ceil(a, b), 3);
-/// assert_eq!(div_ceil(b, a), 1);
-/// ```
+///assert_eq!(div_ceil(a, b), 3);
+///assert_eq!(div_ceil(b, a), 1);
+///```
 #[inline(always)]
 fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
@@ -31,23 +28,20 @@ fn div_ceil(n: usize, d: usize) -> usize {
 		(q, _) => q + 1,
 	}
 }
-///round `n` to nearest multiple of `d` (biased to +infinity)
+///Rounds `n` to nearest multiple of `d` (biased to +infinity)
 ///
-/// # Panics
+///# Panics
+///Never? I guess
 ///
-/// Never? I guess
+///# Examples
+///Basic usage:
+///```
+///let a = 8;
+///let b = 3;
 ///
-/// # Examples
-///
-/// Basic usage:
-///
-/// ```
-/// let a = 8;
-/// let b = 3;
-///
-/// assert_eq!(next_multiple(a, b), 9);
-/// assert_eq!(next_multiple(b, a), 8);
-/// ```
+///assert_eq!(next_multiple(a, b), 9);
+///assert_eq!(next_multiple(b, a), 8);
+///```
 #[inline]
 fn next_multiple(n: usize, d: usize) -> usize {
 	if d == 0 {
@@ -58,9 +52,9 @@ fn next_multiple(n: usize, d: usize) -> usize {
 }
 
 //why isn't this in `core`?
-/// convert a byte-vector to its hex-encoded expansion
+///convert a byte-vector to its hex-encoded expansion
 ///
-/// `upper` makes the output uppercase/capitalized
+///`upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	let mut hex = String::with_capacity(vector.len() * 2);
 	for byte in vector {
@@ -73,9 +67,10 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	hex
 }
 
-/// a crappy non-seedable PRNG based on sys time
+///a crappy non-seedable PRNG based on sys time
 ///
-/// returns 0 instead of `panic`king
+///# Panics
+///Never. returns 0 instead
 fn rng(m: usize) -> usize {
 	SystemTime::now()
 		.duration_since(UNIX_EPOCH)
@@ -85,22 +80,25 @@ fn rng(m: usize) -> usize {
 }
 
 ///get a pseudo-random `str`ing from an `Array`
+///
+///# Panics
+///Never
 pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
 	arr[rng(arr.len())]
 }
 
-/// digests a byte-array into a vector
+///digests a byte-array into a vector
 ///
-/// `bytes` is the data to be hashed
+///`bytes` is the data to be hashed
 ///
-/// `key` is a reference to a state-box in which the hash result is XOR-ed into
+///`key` is a reference to a state-box in which the hash result is XOR-ed into
 fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 	for chunk in bytes.chunks(key.len()) {
 		chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
 	}
 }
 
-/// `xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
+///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	let len = sbox.len();
 	if len == 0 {

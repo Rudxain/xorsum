@@ -20,28 +20,28 @@ const DEFAULT_LEN: usize = 8;
 	group(ArgGroup::new("code").args(&["hex", "raw"]))
 )]
 struct Cli {
-	/// Digest size in bytes (prior to hex-encoding)
+	///Digest size in bytes (prior to hex-encoding)
 	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
-	/// Print hash + filename (default)
+	///Print hash + filename (default)
 	#[clap(short, long, action)]
 	full: bool,
-	/// Only print hash, no filenames
+	///Only print hash, no filenames
 	#[clap(short, long, action)]
 	brief: bool,
 
-	/// lowercase hex (default)
+	///lowercase hex (default)
 	#[clap(short = 'a', long, action)]
 	lower: bool,
-	/// UPPERCASE hex
+	///UPPERCASE hex
 	#[clap(short = 'A', long = "UPPER", action)]
 	upper: bool,
 
-	/// Print hexadecimal digest (default)
+	///Print hexadecimal digest (default)
 	#[clap(short = 'x', long, action)]
 	hex: bool,
-	/// Print raw bytes, not hex
+	///Print raw bytes, not hex
 	#[clap(short = 'r', long, action)]
 	raw: bool,
 
@@ -58,13 +58,13 @@ struct Cli {
 	#[clap(long, action)]
 	rick: bool,
 
-	/// Files to hash
+	///Files to hash
 	#[clap(value_parser)]
 	file: Vec<path::PathBuf>,
 }
 
-/// easter-egg handler, lmao.
-/// if it detects any egg, returns true, otherwise false
+///easter-egg handler, lmao.
+///if it detects any egg, returns true, otherwise false
 fn egg_cooker(cli: &Cli) -> bool {
 	let mut any = false;
 
