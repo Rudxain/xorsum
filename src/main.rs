@@ -70,6 +70,9 @@ fn main() -> std::io::Result<()> {
 		unreachable!()
 	}
 
+	let mut egg = false;
+
+	//is there some way to convert all these `ifs` into a single `match`?
 	if cli.hell {
 		println!(
 			"{}",
@@ -80,7 +83,7 @@ fn main() -> std::io::Result<()> {
 				"Son't eorry evrryone makez nistakes while typong",
 			])
 		);
-		return Ok(());
+		egg = true
 	}
 	if cli.heaven {
 		println!(
@@ -92,22 +95,22 @@ fn main() -> std::io::Result<()> {
 				"The Holy C",
 			])
 		);
-		return Ok(());
+		egg = true
 	}
-
 	if cli.hello {
 		println!("world!");
-		return Ok(());
+		egg = true
 	}
 	if cli.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
-		return Ok(());
+		egg = true
 	}
-
 	if cli.rick {
 		println!("We're no strangers to love...");
-		return Ok(());
+		egg = true
 	}
+
+	if egg {return Ok(())}
 
 	//allocate once, reuse everywhere
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
