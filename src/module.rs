@@ -50,7 +50,11 @@ fn div_ceil(n: usize, d: usize) -> usize {
 /// ```
 #[inline]
 fn next_multiple(n: usize, d: usize) -> usize {
-	if d == 0 {d} else {div_ceil(n, d) * d}
+	if d == 0 {
+		d
+	} else {
+		div_ceil(n, d) * d
+	}
 }
 
 //why isn't this in `core`?

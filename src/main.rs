@@ -117,7 +117,9 @@ fn main() -> std::io::Result<()> {
 	}
 
 	//if any egg is activated, no work should be done
-	if egg_cooker(&cli) {return Ok(())}
+	if egg_cooker(&cli) {
+		return Ok(());
+	}
 
 	//allocate once, reuse everywhere (remember to reset!)
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
@@ -137,42 +139,36 @@ fn main() -> std::io::Result<()> {
 		let mut stdout_v = stdout();
 		let mut lock = stdout_v.lock();
 
-		for path in cli.file {
-			let hyphen = path::Path::new("-");
-			if path.is_file() || path == hyphen {
-				if path == hyphen {
-					//JIC, avoid creating multiple BRs on the same stdin
-					stream_processor(stdin().lock(), &mut sbox)?;
-				} else {
-					stream_processor(std::fs::File::open(&path)?, &mut sbox)?;
-				}
+		//is there a better way to compare paths and strings?
+		let hyphen = path::Path::new("-");
 
-				if cli.raw {
-					stdout_v.write_all(&sbox)?;
-					writeln!(lock, "{}", if cli.brief { "" } else { " -" })?
-				} else {
-					let hex = u8vec_to_hex(&sbox, cli.upper);
-					if cli.brief {
-						writeln!(lock, "{hex}")?
-					} else {
-						writeln!(lock, "{hex} {}", path.display())?
-					}
-				}
+		for path in cli.file {
+			if path == hyphen {
+				//avoid creating multiple BRs on the same stdin (just in case)
+				stream_processor(stdin().lock(), &mut sbox)?;
 			} else {
-				std::io::stderr().lock().write_all(
-					{
-						format!(
-							"{NAME}: {}: {}\n",
-							path.display(),
-							if path.is_dir() {
-								"Is a directory"
-							} else {
-								"No such file or directory"
-							}
-						)
+				let file = std::fs::File::open(&path);
+				match file {
+					Ok(f) => stream_processor(f, &mut sbox)?,
+					Err(e) => {
+						std::io::stderr().lock().write_all(
+							{ format!("{NAME}: {}: {}\n", path.display(), e) }.as_bytes(),
+						)?;
+						continue
 					}
-					.as_bytes(),
-				)?;
+				};
+			}
+
+			if cli.raw {
+				stdout_v.write_all(&sbox)?;
+				writeln!(lock, "{}", if cli.brief { "" } else { " -" })?
+			} else {
+				let hex = u8vec_to_hex(&sbox, cli.upper);
+				if cli.brief {
+					writeln!(lock, "{hex}")?
+				} else {
+					writeln!(lock, "{hex} {}", path.display())?
+				}
 			}
 			sbox.fill(0) //reset
 		}
