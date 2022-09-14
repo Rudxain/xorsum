@@ -99,7 +99,6 @@ fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
 /// `xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	let len = sbox.len();
-	//avoid div by 0
 	if len == 0 {
 		return Ok(());
 	}
@@ -113,7 +112,7 @@ pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<(
 	To handle the length issue, we'll just create our own BufReader with a controlled
 	length. It will result in double-buffering stdin, but we don't know a better way than that.
 	*/
-	const DEFAULT_BUF_LEN: usize = 1 << 0x10;
+	const DEFAULT_BUF_LEN: usize = 0x10000;
 	let buf_len = if DEFAULT_BUF_LEN > len {
 		next_multiple(DEFAULT_BUF_LEN, len)
 	} else {
