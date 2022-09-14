@@ -3,20 +3,54 @@ use std::{
 	time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-/// `ceil`ed division
+/// Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
 /// `n` is the numerator/dividend
 ///
 /// `d` is the denominator/divisor
+///
+/// # Panics
+///
+/// If `d` is 0 (maybe also when overflow).
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let a = 8;
+/// let b = 3;
+///
+/// assert_eq!(div_ceil(a, b), 3);
+/// assert_eq!(div_ceil(b, a), 1);
+/// ```
+#[inline(always)]
 fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
 		(q, 0) => q,
 		(q, _) => q + 1,
 	}
 }
-///round `n` to nearest multiple of `d` (biased to +Infinity)
+///round `n` to nearest multiple of `d` (biased to +infinity)
+///
+/// # Panics
+///
+/// Never? I guess
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let a = 8;
+/// let b = 3;
+///
+/// assert_eq!(next_multiple(a, b), 9);
+/// assert_eq!(next_multiple(b, a), 8);
+/// ```
+#[inline]
 fn next_multiple(n: usize, d: usize) -> usize {
-	div_ceil(n, d) * d
+	if d == 0 {d} else {div_ceil(n, d) * d}
 }
 
 //why isn't this in `core`?
