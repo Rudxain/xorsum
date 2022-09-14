@@ -1,5 +1,8 @@
 use clap::{ArgGroup, Parser};
-use std::io::{stdin, stdout, Write};
+use std::{
+	io::{stdin, stdout, Write},
+	path,
+};
 
 mod module;
 use crate::module::*;
@@ -57,7 +60,7 @@ struct Cli {
 
 	/// Files to hash
 	#[clap(value_parser)]
-	file: Vec<std::path::PathBuf>,
+	file: Vec<path::PathBuf>,
 }
 
 fn main() -> std::io::Result<()> {
@@ -125,7 +128,7 @@ fn main() -> std::io::Result<()> {
 		let mut lock = stdout_v.lock();
 
 		for path in cli.file {
-			let hyphen = std::path::Path::new("-");
+			let hyphen = path::Path::new("-");
 			if path.is_file() || path == hyphen {
 				if path == hyphen {
 					//JIC, avoid creating multiple BRs on the same stdin
