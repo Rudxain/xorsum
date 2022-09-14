@@ -119,7 +119,7 @@ fn main() -> std::io::Result<()> {
 	//if any egg is activated, no work should be done
 	if egg_cooker(&cli) {return Ok(())}
 
-	//allocate once, reuse everywhere
+	//allocate once, reuse everywhere (remember to reset!)
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
 	if cli.file.is_empty() {
