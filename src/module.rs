@@ -1,8 +1,3 @@
-use std::{
-    io::{BufRead, BufReader, Read},
-    time::{Duration, SystemTime, UNIX_EPOCH},
-};
-
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
 ///`n` is the numerator/dividend
@@ -68,19 +63,21 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 
 ///a crappy non-seedable PRNG based on sys time
 ///
+///returns an int in the interval [`0`, `n`)
 ///# Panics
 ///Never. returns 0 instead
-fn rng(m: usize) -> usize {
+fn rng(n: usize) -> usize {
+    use std::time::{Duration, SystemTime, UNIX_EPOCH};
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or(Duration::new(0, 0))
         .as_millis() as usize
-        % m
+        % n
 }
 
 ///get a pseudo-random `str`ing from an `Array`
-pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
-    arr[rng(arr.len())]
+pub fn rand_pick<'a>(a: &'a [&str]) -> &'a str {
+    a[rng(a.len())]
 }
 
 ///digests a byte-array into a vector
@@ -88,27 +85,27 @@ pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
 ///`bytes` is the data to be hashed
 ///
 ///`key` is a reference to a state-box in which the hash result is XOR-ed into
-fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
-    for chunk in bytes.chunks(key.len()) {
-        chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
+fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
+    for chunk in bytes.chunks(sbox.len()) {
+        chunk.iter().zip(&mut *sbox).for_each(|(&b, k)| *k ^= b);
     }
 }
 
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
-pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
+pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
+    use std::io::{BufRead, BufReader};
+
     let len = sbox.len();
     if len == 0 {
         return Ok(());
     }
     /*
-    While Stdin just uses a BufReader internally, it uses the default length.
-    The problem is that the sbox length is controllable by the user,
-    so there's no guarantee that the buf length will be a multiple of sbox.len,
-    which means that we could end up overusing the start of sbox
-    instead of spreading the bytes as evenly as possible.
+    While `Stdin` just uses a `BufReader` internally, it uses the default length.
+    The problem is that the buf length isn't guaranteed to be a multiple of `sbox.len()`,
+    which means that we can get a wrong hash, caused by over-using the lower indices.
 
-    To handle the length issue, we'll just create our own BufReader with a controlled
-    length. It will result in double-buffering stdin, but we don't know a better way than that.
+    To handle this, we'll create our own `BufReader` with a controlled
+    length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
     */
     const DEFAULT_BUF_LEN: usize = 0x10000;
     let buf_len = if DEFAULT_BUF_LEN > len {
@@ -117,8 +114,6 @@ pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<(
         len
     };
 
-    //We create the buffer in here so that the stdin read can be buffered in a way
-    //because it lets us control the length of the buffer.
     let mut reader = BufReader::with_capacity(buf_len, stream);
     loop {
         let read_buf = reader.fill_buf()?;
