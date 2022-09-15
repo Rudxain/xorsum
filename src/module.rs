@@ -71,7 +71,7 @@ fn rng(n: usize) -> usize {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or(Duration::new(0, 0))
-        .as_millis() as usize
+        .as_nanos() as usize
         % n
 }
 
