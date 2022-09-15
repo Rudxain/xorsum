@@ -1,3 +1,2 @@
-hard_tabs = true
 max_width = 96 # (0x40 + 0x80) / 0b10
 short_array_element_width_threshold = 8

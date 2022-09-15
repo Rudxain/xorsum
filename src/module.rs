@@ -1,6 +1,6 @@
 use std::{
-	io::{BufRead, BufReader, Read},
-	time::{Duration, SystemTime, UNIX_EPOCH},
+    io::{BufRead, BufReader, Read},
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
@@ -23,10 +23,10 @@ use std::{
 ///```
 #[inline(always)]
 fn div_ceil(n: usize, d: usize) -> usize {
-	match (n / d, n % d) {
-		(q, 0) => q,
-		(q, _) => q + 1,
-	}
+    match (n / d, n % d) {
+        (q, 0) => q,
+        (q, _) => q + 1,
+    }
 }
 ///Rounds `n` to nearest multiple of `d` (biased to +infinity)
 ///
@@ -44,11 +44,11 @@ fn div_ceil(n: usize, d: usize) -> usize {
 ///```
 #[inline]
 fn next_multiple(n: usize, d: usize) -> usize {
-	if d == 0 {
-		d
-	} else {
-		div_ceil(n, d) * d
-	}
+    if d == 0 {
+        d
+    } else {
+        div_ceil(n, d) * d
+    }
 }
 
 //why isn't this in `core`?
@@ -56,15 +56,15 @@ fn next_multiple(n: usize, d: usize) -> usize {
 ///
 ///`upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
-	let mut hex = String::with_capacity(vector.len() * 2);
-	for byte in vector {
-		hex += &(if upper {
-			format!("{byte:02X}")
-		} else {
-			format!("{byte:02x}")
-		})
-	}
-	hex
+    let mut hex = String::with_capacity(vector.len() * 2);
+    for byte in vector {
+        hex += &(if upper {
+            format!("{byte:02X}")
+        } else {
+            format!("{byte:02x}")
+        })
+    }
+    hex
 }
 
 ///a crappy non-seedable PRNG based on sys time
@@ -72,11 +72,11 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 ///# Panics
 ///Never. returns 0 instead
 fn rng(m: usize) -> usize {
-	SystemTime::now()
-		.duration_since(UNIX_EPOCH)
-		.unwrap_or(Duration::new(0, 0))
-		.as_millis() as usize
-		% m
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::new(0, 0))
+        .as_millis() as usize
+        % m
 }
 
 ///get a pseudo-random `str`ing from an `Array`
@@ -84,7 +84,7 @@ fn rng(m: usize) -> usize {
 ///# Panics
 ///Never
 pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
-	arr[rng(arr.len())]
+    arr[rng(arr.len())]
 }
 
 ///digests a byte-array into a vector
@@ -93,47 +93,47 @@ pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
 ///
 ///`key` is a reference to a state-box in which the hash result is XOR-ed into
 fn xor_hasher(bytes: &[u8], key: &mut [u8]) {
-	for chunk in bytes.chunks(key.len()) {
-		chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
-	}
+    for chunk in bytes.chunks(key.len()) {
+        chunk.iter().zip(&mut *key).for_each(|(&b, k)| *k ^= b);
+    }
 }
 
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl Read, sbox: &mut [u8]) -> std::io::Result<()> {
-	let len = sbox.len();
-	if len == 0 {
-		return Ok(());
-	}
-	/*
-	While Stdin just uses a BufReader internally, it uses the default length.
-	The problem is that the sbox length is controllable by the user,
-	so there's no guarantee that the buf length will be a multiple of sbox.len,
-	which means that we could end up overusing the start of sbox
-	instead of spreading the bytes as evenly as possible.
+    let len = sbox.len();
+    if len == 0 {
+        return Ok(());
+    }
+    /*
+    While Stdin just uses a BufReader internally, it uses the default length.
+    The problem is that the sbox length is controllable by the user,
+    so there's no guarantee that the buf length will be a multiple of sbox.len,
+    which means that we could end up overusing the start of sbox
+    instead of spreading the bytes as evenly as possible.
 
-	To handle the length issue, we'll just create our own BufReader with a controlled
-	length. It will result in double-buffering stdin, but we don't know a better way than that.
-	*/
-	const DEFAULT_BUF_LEN: usize = 0x10000;
-	let buf_len = if DEFAULT_BUF_LEN > len {
-		next_multiple(DEFAULT_BUF_LEN, len)
-	} else {
-		len
-	};
+    To handle the length issue, we'll just create our own BufReader with a controlled
+    length. It will result in double-buffering stdin, but we don't know a better way than that.
+    */
+    const DEFAULT_BUF_LEN: usize = 0x10000;
+    let buf_len = if DEFAULT_BUF_LEN > len {
+        next_multiple(DEFAULT_BUF_LEN, len)
+    } else {
+        len
+    };
 
-	//We create the buffer in here so that the stdin read can be buffered in a way
-	//because it lets us control the length of the buffer.
-	let mut reader = BufReader::with_capacity(buf_len, stream);
-	loop {
-		let read_buf = reader.fill_buf()?;
-		let read_len = read_buf.len();
-		if read_len == 0 {
-			break;
-		}
+    //We create the buffer in here so that the stdin read can be buffered in a way
+    //because it lets us control the length of the buffer.
+    let mut reader = BufReader::with_capacity(buf_len, stream);
+    loop {
+        let read_buf = reader.fill_buf()?;
+        let read_len = read_buf.len();
+        if read_len == 0 {
+            break;
+        }
 
-		xor_hasher(read_buf, sbox);
-		reader.consume(read_len);
-	}
+        xor_hasher(read_buf, sbox);
+        reader.consume(read_len);
+    }
 
-	Ok(())
+    Ok(())
 }
