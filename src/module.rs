@@ -64,20 +64,22 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 ///a crappy non-seedable PRNG based on sys time
 ///
 ///returns an int in the interval [`0`, `n`)
+///
+///returns `0` if the duration calculation panics
 ///# Panics
-///Never. returns 0 instead
+///if `n` is `0`
 fn rng(n: usize) -> usize {
-    use std::time::{Duration, SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or(Duration::new(0, 0))
-        .as_nanos() as usize
-        % n
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(d) => d.as_nanos() as usize % n,
+        Err(_) => 0,
+    }
 }
 
-///get a pseudo-random `str`ing from an `Array`
-pub fn rand_pick<'a>(a: &'a [&str]) -> &'a str {
-    a[rng(a.len())]
+///get a pseudo-random value from an `Array`
+pub fn rand_pick<T>(a: &[T]) -> &T {
+    &a[rng(a.len())]
 }
 
 ///digests a byte-array into a vector
