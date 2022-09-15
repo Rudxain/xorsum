@@ -64,7 +64,11 @@ struct Cli {
 }
 
 ///easter-egg handler, lmao.
+///
 ///if it detects any egg, returns `true`, otherwise `false`
+///
+///# Panics
+///If any of the several calls to `println!` panics
 fn egg_cooker(c: &Cli) -> bool {
     let mut any = false;
 

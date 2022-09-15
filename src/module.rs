@@ -44,10 +44,9 @@ fn div_ceil(n: usize, d: usize) -> usize {
 ///```
 #[inline]
 fn next_multiple(n: usize, d: usize) -> usize {
-    if d == 0 {
-        d
-    } else {
-        div_ceil(n, d) * d
+    match d {
+        0 => d,
+        _ => div_ceil(n, d) * d,
     }
 }
 
@@ -80,9 +79,6 @@ fn rng(m: usize) -> usize {
 }
 
 ///get a pseudo-random `str`ing from an `Array`
-///
-///# Panics
-///Never
 pub fn rand_pick<'a>(arr: &'a [&str]) -> &'a str {
     arr[rng(arr.len())]
 }
