@@ -1,4 +1,4 @@
-#![warn(clippy::pedantic, clippy::nursery)]
+#![warn(clippy::pedantic, clippy::format_push_string)]
 #![deny(
 	clippy::cargo,
 	clippy::missing_const_for_fn,
@@ -25,7 +25,7 @@ const DEFAULT_LEN: usize = 8;
 	group(ArgGroup::new("name").args(&["full", "brief"])),
 	group(ArgGroup::new("case").args(&["lower", "upper"])),
 	group(ArgGroup::new("code").args(&["hex", "raw"])),
-	group(ArgGroup::new("egg").args(&["hell", "heaven", "hello"])),
+	group(ArgGroup::new("egg").args(&["hell", "heaven", "hello", "olé", "rick"])),
 )]
 struct Cli {
 	///Digest size in bytes (prior to hex-encoding)
@@ -76,11 +76,20 @@ struct Cli {
 ///if it detects any egg, returns `true`, otherwise `false`
 ///
 ///# Panics
-///If any of the several calls to `println!` panics
+///if `println!` panics, and/or if 2 or more eggs are selected
 fn egg_cooker(c: &Cli) -> bool {
-	let mut any = false;
+	{
+		let mut b = false;
+		for egg in [c.hell, c.heaven, c.hello, c.olé, c.rick] {
+			if egg && b {
+				unreachable!()
+			}
+			if egg {
+				b = !b;
+			};
+		}
+	}
 
-	//is there some way to convert all these `ifs` into a single `match`?
 	if c.hell {
 		println!(
 			"{}",
@@ -91,7 +100,7 @@ fn egg_cooker(c: &Cli) -> bool {
 				"Son't eorry evrryone makez nistakes while typong",
 			])
 		);
-		any = true;
+		return true;
 	}
 	if c.heaven {
 		println!(
@@ -103,22 +112,21 @@ fn egg_cooker(c: &Cli) -> bool {
 				"The Holy C",
 			])
 		);
-		any = true;
+		return true;
 	}
 	if c.hello {
 		println!("world!");
-		any = true;
+		return true;
 	}
 	if c.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
-		any = true;
+		return true;
 	}
 	if c.rick {
 		println!("We're no strangers to love...");
-		any = true;
+		return true;
 	}
-
-	any
+	false
 }
 
 fn main() -> std::io::Result<()> {
@@ -128,7 +136,7 @@ fn main() -> std::io::Result<()> {
 		unreachable!()
 	}
 
-	//if any egg is activated, no work should be done
+	//if an egg is activated, no work should be done
 	if egg_cooker(&cli) {
 		return Ok(());
 	}
@@ -160,7 +168,7 @@ fn main() -> std::io::Result<()> {
 					Ok(f) => stream_processor(f, &mut sbox)?,
 					Err(e) => {
 						std::io::stderr().lock().write_all(
-							{ format!("{NAME}: {}: {}\n", path.display(), e) }.as_bytes(),
+							{ format!("{}: {}: {}\n", NAME, path.display(), e) }.as_bytes(),
 						)?;
 						continue;
 					}
@@ -173,9 +181,9 @@ fn main() -> std::io::Result<()> {
 			} else {
 				let hex = u8vec_to_hex(&sbox, cli.upper);
 				if cli.brief {
-					writeln!(lock, "{hex}")?;
+					writeln!(lock, "{}", hex)?;
 				} else {
-					writeln!(lock, "{hex} {}", path.display())?;
+					writeln!(lock, "{} {}", hex, path.display())?;
 				}
 			}
 			sbox.fill(0); //reset (clear)

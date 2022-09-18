@@ -1,4 +1,4 @@
-#![warn(clippy::pedantic, clippy::nursery)]
+#![warn(clippy::pedantic, clippy::format_push_string)]
 #![deny(
 	clippy::cargo,
 	clippy::missing_const_for_fn,
@@ -58,13 +58,14 @@ const fn next_multiple(n: usize, d: usize) -> usize {
 ///
 ///`upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
+	use std::fmt::Write as _;
 	let mut hex = String::with_capacity(vector.len() * 2);
 	for byte in vector {
-		hex += &(if upper {
-			format!("{byte:02X}")
+		let _ = if upper {
+			write!(hex, "{:02X}", byte)
 		} else {
-			format!("{byte:02x}")
-		});
+			write!(hex, "{:02x}", byte)
+		};
 	}
 	hex
 }
