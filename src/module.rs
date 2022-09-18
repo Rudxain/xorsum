@@ -1,5 +1,9 @@
-#![warn(clippy::pedantic)]
-#![deny(clippy::missing_const_for_fn)]
+#![warn(clippy::pedantic, clippy::nursery)]
+#![deny(
+	clippy::cargo,
+	clippy::missing_const_for_fn,
+	clippy::type_repetition_in_bounds
+)]
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
@@ -97,6 +101,17 @@ fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
 	}
 }
 
+///calculates the best buffer size for a given hash length
+#[inline]
+const fn derive_buf_len(n: usize) -> usize {
+	const DEFAULT_BUF_LEN: usize = 0x10000;
+	if DEFAULT_BUF_LEN > n {
+		next_multiple(DEFAULT_BUF_LEN, n)
+	} else {
+		n
+	}
+}
+
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	use std::io::{BufRead, BufReader};
@@ -113,12 +128,7 @@ pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io:
 	To handle this, we'll create our own `BufReader` with a controlled
 	length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
 	*/
-	const DEFAULT_BUF_LEN: usize = 0x10000;
-	let buf_len = if DEFAULT_BUF_LEN > len {
-		next_multiple(DEFAULT_BUF_LEN, len)
-	} else {
-		len
-	};
+	let buf_len = derive_buf_len(len);
 
 	let mut reader = BufReader::with_capacity(buf_len, stream);
 	loop {

@@ -1,5 +1,10 @@
-#![warn(clippy::pedantic)]
-#![deny(clippy::missing_const_for_fn)]
+#![warn(clippy::pedantic, clippy::nursery)]
+#![deny(
+	clippy::cargo,
+	clippy::missing_const_for_fn,
+	clippy::type_repetition_in_bounds
+)]
+
 use clap::{ArgGroup, Parser};
 use std::{
 	io::{stdin, stdout, Write},
@@ -19,7 +24,8 @@ const DEFAULT_LEN: usize = 8;
 	long_about = "If no FILES are given, or if FILE is \"-\", reads Standard Input",
 	group(ArgGroup::new("name").args(&["full", "brief"])),
 	group(ArgGroup::new("case").args(&["lower", "upper"])),
-	group(ArgGroup::new("code").args(&["hex", "raw"]))
+	group(ArgGroup::new("code").args(&["hex", "raw"])),
+	group(ArgGroup::new("egg").args(&["hell", "heaven", "hello"])),
 )]
 struct Cli {
 	///Digest size in bytes (prior to hex-encoding)
@@ -133,13 +139,13 @@ fn main() -> std::io::Result<()> {
 	if cli.file.is_empty() {
 		stream_processor(stdin().lock(), &mut sbox)?;
 		if cli.raw {
-			stdout().lock().write_all(&sbox)?
+			stdout().lock().write_all(&sbox)?;
 		} else {
 			println!(
 				"{}{}",
 				u8vec_to_hex(&sbox, cli.upper),
 				if cli.brief { "" } else { " -" }
-			)
+			);
 		}
 	} else {
 		let mut stdout_v = stdout();
@@ -163,16 +169,16 @@ fn main() -> std::io::Result<()> {
 
 			if cli.raw {
 				stdout_v.write_all(&sbox)?;
-				writeln!(lock, "{}", if cli.brief { "" } else { " -" })?
+				writeln!(lock, "{}", if cli.brief { "" } else { " -" })?;
 			} else {
 				let hex = u8vec_to_hex(&sbox, cli.upper);
 				if cli.brief {
-					writeln!(lock, "{hex}")?
+					writeln!(lock, "{hex}")?;
 				} else {
-					writeln!(lock, "{hex} {}", path.display())?
+					writeln!(lock, "{hex} {}", path.display())?;
 				}
 			}
-			sbox.fill(0) //reset (clear)
+			sbox.fill(0); //reset (clear)
 		}
 	}
 	Ok(())
