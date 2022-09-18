@@ -1,5 +1,6 @@
 single-char-binding-names-threshold = 3
 too-large-for-stack = 256
+cognitive-complexity-threshold = 24
 
 # I haven't read about the following, that's why they're unused:
 
@@ -15,9 +16,7 @@ too-large-for-stack = 256
 # type-complexity-threshold
 # max-struct-bools
 # unreadable-literal-lint-fractions
-# cognitive-complexity-threshold
 # max-suggested-slice-pattern-length
-# cyclomatic-complexity-threshold
 # max-trait-bounds
 # vec-box-size-threshold
 # verbose-bit-mask-threshold

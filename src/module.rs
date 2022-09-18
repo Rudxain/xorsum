@@ -1,3 +1,6 @@
+#![warn(clippy::pedantic)]
+#[deny(clippy::missing_const_for_fn)]
+
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
 ///`n` is the numerator/dividend
@@ -16,12 +19,12 @@
 ///assert_eq!(div_ceil(a, b), 3);
 ///assert_eq!(div_ceil(b, a), 1);
 ///```
-#[inline(always)]
+#[inline]
 const fn div_ceil(n: usize, d: usize) -> usize {
-    match (n / d, n % d) {
-        (q, 0) => q,
-        (q, _) => q + 1,
-    }
+	match (n / d, n % d) {
+		(q, 0) => q,
+		(q, _) => q + 1,
+	}
 }
 
 ///Rounds `n` to nearest multiple of `d` (biased to +infinity)
@@ -40,10 +43,10 @@ const fn div_ceil(n: usize, d: usize) -> usize {
 ///```
 #[inline]
 const fn next_multiple(n: usize, d: usize) -> usize {
-    match d {
-        0 => d,
-        _ => div_ceil(n, d) * d,
-    }
+	match d {
+		0 => d,
+		_ => div_ceil(n, d) * d,
+	}
 }
 
 //why isn't this in `core`?
@@ -51,15 +54,15 @@ const fn next_multiple(n: usize, d: usize) -> usize {
 ///
 ///`upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
-    let mut hex = String::with_capacity(vector.len() * 2);
-    for byte in vector {
-        hex += &(if upper {
-            format!("{byte:02X}")
-        } else {
-            format!("{byte:02x}")
-        })
-    }
-    hex
+	let mut hex = String::with_capacity(vector.len() * 2);
+	for byte in vector {
+		hex += &(if upper {
+			format!("{byte:02X}")
+		} else {
+			format!("{byte:02x}")
+		});
+	}
+	hex
 }
 
 ///a crappy non-seedable PRNG based on sys time
@@ -70,17 +73,17 @@ pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 ///# Panics
 ///if `n` is `0`
 fn rng(n: usize) -> usize {
-    use std::time::{SystemTime, UNIX_EPOCH};
+	use std::time::{SystemTime, UNIX_EPOCH};
 
-    match SystemTime::now().duration_since(UNIX_EPOCH) {
-        Ok(d) => d.as_nanos() as usize % n,
-        Err(_) => 0,
-    }
+	match SystemTime::now().duration_since(UNIX_EPOCH) {
+		Ok(d) => d.as_nanos() as usize % n,
+		Err(_) => 0,
+	}
 }
 
 ///get a pseudo-random value from an `Array`
 pub fn rand_pick<T>(a: &[T]) -> &T {
-    &a[rng(a.len())]
+	&a[rng(a.len())]
 }
 
 ///digests a byte-array into a vector
@@ -89,45 +92,45 @@ pub fn rand_pick<T>(a: &[T]) -> &T {
 ///
 ///`key` is a reference to a state-box in which the hash result is XOR-ed into
 fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
-    for chunk in bytes.chunks(sbox.len()) {
-        chunk.iter().zip(&mut *sbox).for_each(|(&b, k)| *k ^= b);
-    }
+	for chunk in bytes.chunks(sbox.len()) {
+		chunk.iter().zip(&mut *sbox).for_each(|(&b, k)| *k ^= b);
+	}
 }
 
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
-    use std::io::{BufRead, BufReader};
+	use std::io::{BufRead, BufReader};
 
-    let len = sbox.len();
-    if len == 0 {
-        return Ok(());
-    }
-    /*
-    While `Stdin` just uses a `BufReader` internally, it uses the default length.
-    The problem is that the buf length isn't guaranteed to be a multiple of `sbox.len()`,
-    which means that we can get a wrong hash, caused by over-using the lower indices.
+	let len = sbox.len();
+	if len == 0 {
+		return Ok(());
+	}
+	/*
+	While `Stdin` just uses a `BufReader` internally, it uses the default length.
+	The problem is that the buf length isn't guaranteed to be a multiple of `sbox.len()`,
+	which means that we can get a wrong hash, caused by over-using the lower indices.
 
-    To handle this, we'll create our own `BufReader` with a controlled
-    length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
-    */
-    const DEFAULT_BUF_LEN: usize = 0x10000;
-    let buf_len = if DEFAULT_BUF_LEN > len {
-        next_multiple(DEFAULT_BUF_LEN, len)
-    } else {
-        len
-    };
+	To handle this, we'll create our own `BufReader` with a controlled
+	length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
+	*/
+	const DEFAULT_BUF_LEN: usize = 0x10000;
+	let buf_len = if DEFAULT_BUF_LEN > len {
+		next_multiple(DEFAULT_BUF_LEN, len)
+	} else {
+		len
+	};
 
-    let mut reader = BufReader::with_capacity(buf_len, stream);
-    loop {
-        let read_buf = reader.fill_buf()?;
-        let read_len = read_buf.len();
-        if read_len == 0 {
-            break;
-        }
+	let mut reader = BufReader::with_capacity(buf_len, stream);
+	loop {
+		let read_buf = reader.fill_buf()?;
+		let read_len = read_buf.len();
+		if read_len == 0 {
+			break;
+		}
 
-        xor_hasher(read_buf, sbox);
-        reader.consume(read_len);
-    }
+		xor_hasher(read_buf, sbox);
+		reader.consume(read_len);
+	}
 
-    Ok(())
+	Ok(())
 }
