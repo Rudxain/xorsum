@@ -1,5 +1,5 @@
 #![warn(clippy::pedantic)]
-#[deny(clippy::missing_const_for_fn)]
+#![deny(clippy::missing_const_for_fn)]
 use clap::{ArgGroup, Parser};
 use std::{
 	io::{stdin, stdout, Write},
@@ -85,7 +85,7 @@ fn egg_cooker(c: &Cli) -> bool {
 				"Son't eorry evrryone makez nistakes while typong",
 			])
 		);
-		any = true
+		any = true;
 	}
 	if c.heaven {
 		println!(
@@ -97,19 +97,19 @@ fn egg_cooker(c: &Cli) -> bool {
 				"The Holy C",
 			])
 		);
-		any = true
+		any = true;
 	}
 	if c.hello {
 		println!("world!");
-		any = true
+		any = true;
 	}
 	if c.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
-		any = true
+		any = true;
 	}
 	if c.rick {
 		println!("We're no strangers to love...");
-		any = true
+		any = true;
 	}
 
 	any

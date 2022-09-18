@@ -1,5 +1,5 @@
 #![warn(clippy::pedantic)]
-#[deny(clippy::missing_const_for_fn)]
+#![deny(clippy::missing_const_for_fn)]
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
