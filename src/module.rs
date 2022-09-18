@@ -23,6 +23,7 @@ const fn div_ceil(n: usize, d: usize) -> usize {
         (q, _) => q + 1,
     }
 }
+
 ///Rounds `n` to nearest multiple of `d` (biased to +infinity)
 ///
 ///# Panics
@@ -38,7 +39,7 @@ const fn div_ceil(n: usize, d: usize) -> usize {
 ///assert_eq!(next_multiple(b, a), 8);
 ///```
 #[inline]
-fn next_multiple(n: usize, d: usize) -> usize {
+const fn next_multiple(n: usize, d: usize) -> usize {
     match d {
         0 => d,
         _ => div_ceil(n, d) * d,
