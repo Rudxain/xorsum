@@ -17,7 +17,7 @@
 ///assert_eq!(div_ceil(b, a), 1);
 ///```
 #[inline(always)]
-fn div_ceil(n: usize, d: usize) -> usize {
+const fn div_ceil(n: usize, d: usize) -> usize {
     match (n / d, n % d) {
         (q, 0) => q,
         (q, _) => q + 1,
