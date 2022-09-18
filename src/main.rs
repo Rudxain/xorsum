@@ -86,7 +86,7 @@ fn egg_cooker(c: &Cli) -> bool {
 				unreachable!()
 			}
 			if egg {
-				b = !b;
+				b = true;
 			};
 		}
 	}
