@@ -12,6 +12,7 @@ use std::{
 };
 
 mod module;
+#[allow(clippy::wildcard_imports)]
 use crate::module::*;
 
 const NAME: &str = "xorsum";
