@@ -1,8 +1,8 @@
-#![warn(clippy::pedantic, clippy::format_push_string)]
-#![deny(
+#![warn(
 	clippy::cargo,
-	clippy::missing_const_for_fn,
-	clippy::type_repetition_in_bounds
+	clippy::pedantic,
+	clippy::nursery,
+	clippy::format_push_string
 )]
 
 use clap::{ArgGroup, Parser};
