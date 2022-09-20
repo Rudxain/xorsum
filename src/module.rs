@@ -1,11 +1,16 @@
 #![warn(
-	unsafe_code,
 	unused,
 	clippy::pedantic,
 	clippy::nursery,
 	clippy::decimal_literal_representation,
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
+)]
+#![deny(unsafe_code)]
+#![forbid(
+	clippy::float_arithmetic,
+	clippy::lossy_float_literal,
+	/*reason = "performance and correctness"*/
 )]
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
@@ -123,6 +128,7 @@ pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io:
 	length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
 	*/
 	let buf_len = {
+		///best buffer size for most systems
 		const DEFAULT_BUF_LEN: usize = 0x10000;
 		if DEFAULT_BUF_LEN > len {
 			next_multiple(DEFAULT_BUF_LEN, len)

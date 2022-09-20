@@ -1,5 +1,4 @@
 #![warn(
-	unsafe_code,
 	unused,
 	future_incompatible,
 	clippy::cargo,
@@ -9,6 +8,8 @@
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
 )]
+//`clap::Parser` uses floats, so we can't `forbid` them
+#![deny(unsafe_code, clippy::float_arithmetic, clippy::lossy_float_literal)]
 
 use clap::{ArgGroup, Parser};
 use std::{
@@ -20,7 +21,9 @@ mod module;
 #[allow(clippy::wildcard_imports)]
 use crate::module::*;
 
+///crate and program name
 const NAME: &str = "xorsum";
+///default hash/digest/output length/size in bytes
 const DEFAULT_LEN: usize = 8;
 
 #[derive(Parser)]
@@ -93,7 +96,9 @@ fn egg_cooker(c: &Cli) -> bool {
 			any = true;
 		};
 	}
-	if !any {return any}
+	if !any {
+		return any;
+	}
 
 	if c.hell {
 		println!(
