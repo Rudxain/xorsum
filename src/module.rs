@@ -1,5 +1,6 @@
 #![warn(
-	clippy::cargo,
+	unsafe_code,
+	unused,
 	clippy::pedantic,
 	clippy::nursery,
 	clippy::format_push_string

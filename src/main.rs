@@ -1,4 +1,7 @@
 #![warn(
+	unsafe_code,
+	unused,
+	future_incompatible,
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::nursery,
