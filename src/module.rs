@@ -3,7 +3,8 @@
 	unused,
 	clippy::pedantic,
 	clippy::nursery,
-	clippy::format_push_string
+	clippy::format_push_string,
+	clippy::arithmetic_side_effects
 )]
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
