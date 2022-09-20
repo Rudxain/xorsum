@@ -5,6 +5,7 @@
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::nursery,
+	clippy::decimal_literal_representation,
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
 )]
