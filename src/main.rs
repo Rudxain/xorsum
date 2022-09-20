@@ -2,16 +2,28 @@
 	unused,
 	future_incompatible,
 	clippy::exit,
+	clippy::unwrap_used,
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::nursery,
+	clippy::shadow_unrelated,
+	clippy::fn_to_numeric_cast_any,
+	clippy::string_to_string,
 	clippy::decimal_literal_representation,
+	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
 )]
-//`clap::Parser` uses floats, so we can't `forbid` them
-#![deny(unsafe_code, clippy::float_arithmetic, clippy::lossy_float_literal)]
+//can't `forbid` floats, blame `clap::Parser`
+#![deny(
+	unsafe_code,
+	clippy::large_include_file,
+	clippy::mem_forget,
+	clippy::float_arithmetic,
+	clippy::lossy_float_literal,
+	clippy::float_cmp_const
+)]
 
 use clap::{ArgGroup, Parser};
 use std::{
@@ -98,9 +110,7 @@ fn egg_cooker(c: &Cli) -> bool {
 			any = true;
 		};
 	}
-	if !any {
-		return any;
-	}
+	let any = any;
 
 	if c.hell {
 		println!(
@@ -112,7 +122,7 @@ fn egg_cooker(c: &Cli) -> bool {
 				"Son't eorry evrryone makez nistakes while typong",
 			])
 		);
-		return true;
+		return any;
 	}
 	if c.heaven {
 		println!(
@@ -124,21 +134,21 @@ fn egg_cooker(c: &Cli) -> bool {
 				"The Holy C",
 			])
 		);
-		return true;
+		return any;
 	}
 	if c.hello {
 		println!("world!");
-		return true;
+		return any;
 	}
 	if c.olé {
 		println!("¡Ostia tío! ¿Cómo has logrado escribir eso?");
-		return true;
+		return any;
 	}
 	if c.rick {
 		println!("We're no strangers to love...");
-		return true;
+		return any;
 	}
-	false
+	any
 }
 
 fn main() -> std::io::Result<()> {

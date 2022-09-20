@@ -2,17 +2,24 @@
 	unused,
 	clippy::pedantic,
 	clippy::nursery,
+	clippy::shadow_unrelated,
+	clippy::string_to_string,
 	clippy::decimal_literal_representation,
+	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
 )]
-#![deny(unsafe_code)]
+#![deny(clippy::unwrap_used)]
 #![forbid(
+	unsafe_code,
 	clippy::exit,
+	clippy::mem_forget,
+	clippy::fn_to_numeric_cast_any,
+	clippy::large_include_file,
 	clippy::float_arithmetic,
 	clippy::lossy_float_literal,
-	/*reason = "performance and correctness"*/
+	clippy::float_cmp_const
 )]
 
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
@@ -115,8 +122,6 @@ fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
 
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
-	use std::io::{BufRead, BufReader};
-
 	let len = sbox.len();
 	if len == 0 {
 		return Ok(());
@@ -139,8 +144,10 @@ pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io:
 		}
 	};
 
-	let mut reader = BufReader::with_capacity(buf_len, stream);
+	let mut reader = std::io::BufReader::with_capacity(buf_len, stream);
 	loop {
+		use std::io::BufRead as _;
+
 		let read_buf = reader.fill_buf()?;
 		let read_len = read_buf.len();
 		if read_len == 0 {
