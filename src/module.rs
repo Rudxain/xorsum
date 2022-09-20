@@ -9,6 +9,7 @@
 )]
 #![deny(unsafe_code)]
 #![forbid(
+	clippy::exit,
 	clippy::float_arithmetic,
 	clippy::lossy_float_literal,
 	/*reason = "performance and correctness"*/

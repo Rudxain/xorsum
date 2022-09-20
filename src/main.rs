@@ -1,6 +1,7 @@
 #![warn(
 	unused,
 	future_incompatible,
+	clippy::exit,
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::nursery,
