@@ -7,7 +7,6 @@
 	clippy::pedantic,
 	clippy::nursery,
 	clippy::shadow_unrelated,
-	clippy::fn_to_numeric_cast_any,
 	clippy::string_to_string,
 	clippy::decimal_literal_representation,
 	clippy::unseparated_literal_suffix,
@@ -15,15 +14,19 @@
 	clippy::format_push_string,
 	clippy::arithmetic_side_effects
 )]
-//can't `forbid` floats, blame `clap::Parser`
+//can't `forbid` anything, blame `clap::Parser`
 #![deny(
-	unsafe_code,
-	clippy::large_include_file,
 	clippy::mem_forget,
+	clippy::large_include_file,
+	clippy::fn_to_numeric_cast_any,
+	clippy::cast_precision_loss,
 	clippy::float_arithmetic,
+	clippy::excessive_precision,
 	clippy::lossy_float_literal,
+	clippy::float_cmp,
 	clippy::float_cmp_const
 )]
+#![forbid(unsafe_code)]
 
 use clap::{ArgGroup, Parser};
 use std::{
@@ -48,7 +51,8 @@ const DEFAULT_LEN: usize = 8;
 	group(ArgGroup::new("name").args(&["full", "brief"])),
 	group(ArgGroup::new("case").args(&["lower", "upper"])),
 	group(ArgGroup::new("code").args(&["hex", "raw"])),
-	group(ArgGroup::new("egg").args(&["hell", "heaven", "hello", "olé", "rick"])),
+	//"ol" is the only way to work-around a `clap` bug
+	group(ArgGroup::new("egg").args(&["hell", "heaven", "hello", "ol", "rick"])),
 )]
 struct Cli {
 	///Digest size in bytes (prior to hex-encoding)
@@ -76,17 +80,17 @@ struct Cli {
 	#[clap(short = 'r', long, action)]
 	raw: bool,
 
-	#[clap(long, action)]
+	#[clap(long, action, hide = true)]
 	hell: bool,
-	#[clap(long, action)]
+	#[clap(long, action, hide = true)]
 	heaven: bool,
 
-	#[clap(long, action)]
+	#[clap(long, action, hide = true)]
 	hello: bool,
-	#[clap(long = "olé!", action)]
+	#[clap(long = "olé!", action, hide = true)]
 	olé: bool,
 
-	#[clap(long, action)]
+	#[clap(long, action, hide = true)]
 	rick: bool,
 
 	///Files to hash
