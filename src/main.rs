@@ -84,17 +84,16 @@ struct Cli {
 ///# Panics
 ///if `println!` panics, and/or if 2 or more eggs are selected
 fn egg_cooker(c: &Cli) -> bool {
-	{
-		let mut b = false;
-		for egg in [c.hell, c.heaven, c.hello, c.olé, c.rick] {
-			if egg && b {
-				unreachable!()
-			}
-			if egg {
-				b = true;
-			};
+	let mut any = false;
+	for egg in [c.hell, c.heaven, c.hello, c.olé, c.rick] {
+		if egg && any {
+			unreachable!()
 		}
+		if egg {
+			any = true;
+		};
 	}
+	if !any {return any}
 
 	if c.hell {
 		println!(

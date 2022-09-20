@@ -62,6 +62,7 @@ const fn next_multiple(n: usize, d: usize) -> usize {
 ///`upper` makes the output uppercase/capitalized
 pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
 	use std::fmt::Write as _;
+
 	let mut hex = String::with_capacity(vector.len() * 2);
 	for byte in vector {
 		let _ = if upper {
@@ -105,17 +106,6 @@ fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
 	}
 }
 
-///calculates the best buffer size for a given hash length
-#[inline]
-const fn derive_buf_len(n: usize) -> usize {
-	const DEFAULT_BUF_LEN: usize = 0x10000;
-	if DEFAULT_BUF_LEN > n {
-		next_multiple(DEFAULT_BUF_LEN, n)
-	} else {
-		n
-	}
-}
-
 ///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
 pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	use std::io::{BufRead, BufReader};
@@ -132,7 +122,14 @@ pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io:
 	To handle this, we'll create our own `BufReader` with a controlled
 	length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
 	*/
-	let buf_len = derive_buf_len(len);
+	let buf_len = {
+		const DEFAULT_BUF_LEN: usize = 0x10000;
+		if DEFAULT_BUF_LEN > len {
+			next_multiple(DEFAULT_BUF_LEN, len)
+		} else {
+			len
+		}
+	};
 
 	let mut reader = BufReader::with_capacity(buf_len, stream);
 	loop {
