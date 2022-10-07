@@ -8,6 +8,7 @@ categories = ["command-line-utilities", "algorithms"]
 license = "LGPL-3.0-or-later"
 repository = "https://github.com/Rudxain/xorsum"
 documentation = "https://docs.rs/xorsum"
+exclude = [".*"]
 
 [dependencies]
 clap = {version = "3.2.17", features = ["derive"]}
