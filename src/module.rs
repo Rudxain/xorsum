@@ -1,7 +1,4 @@
 #![warn(
-	unused,
-	clippy::pedantic,
-	clippy::nursery,
 	clippy::shadow_unrelated,
 	clippy::string_to_string,
 	clippy::decimal_literal_representation,
