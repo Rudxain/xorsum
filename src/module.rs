@@ -1,15 +1,5 @@
-#![warn(
-	clippy::shadow_unrelated,
-	clippy::string_to_string,
-	clippy::decimal_literal_representation,
-	clippy::unseparated_literal_suffix,
-	clippy::empty_structs_with_brackets,
-	clippy::format_push_string,
-	clippy::arithmetic_side_effects
-)]
 #![deny(clippy::unwrap_used)]
 #![forbid(
-	unsafe_code,
 	clippy::exit,
 	clippy::mem_forget,
 	clippy::large_include_file,
