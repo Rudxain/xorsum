@@ -63,9 +63,9 @@ echo -n aaaa | xorsum -l 4
 xorsum a --brief #`-l 8` is implicit
 #out: "6161616100000000"
 ```
-Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including an EOL.
-
-PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
+> Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including an EOL.
+>
+> PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
 ### Emulating 🏔AE
 `--length` **doesn't truncate** the output:
