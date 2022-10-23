@@ -1,6 +1,10 @@
 # xorsum
 <div align=center>
-<img src=icon.svg width=50% height=50%>
+  <img
+    alt="XOR symbol at upper-left corner, plus-sign at bottom-right corner"
+    src=icon.svg
+    width=50% height=50%
+  >
 </div>
 
 ## Algorithm
