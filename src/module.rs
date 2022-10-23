@@ -30,7 +30,8 @@
 ///assert_eq!(div_ceil(a, b), 3);
 ///assert_eq!(div_ceil(b, a), 1);
 ///```
-#[inline]
+#[allow(clippy::inline_always)]
+#[inline(always)]
 const fn div_ceil(n: usize, d: usize) -> usize {
 	match (n / d, n % d) {
 		(q, 0) => q,
@@ -39,9 +40,6 @@ const fn div_ceil(n: usize, d: usize) -> usize {
 }
 
 ///Rounds `n` to nearest multiple of `d` (biased to +infinity)
-///
-///# Panics
-///Never? I guess
 ///
 ///# Examples
 ///Basic usage:
@@ -60,58 +58,53 @@ const fn next_multiple(n: usize, d: usize) -> usize {
 	}
 }
 
-//why isn't this in `core`?
-///convert a byte-vector to its hex-encoded expansion
-///
-///`upper` makes the output uppercase/capitalized
-pub fn u8vec_to_hex(vector: &Vec<u8>, upper: bool) -> String {
+//why isn't this in `std`?
+///returns lowercase hex-encoded expansion of a byte-vector
+pub fn u8vec_to_hex_outplace(vector: &Vec<u8>) -> String {
 	use std::fmt::Write as _;
 
 	let mut hex = String::with_capacity(vector.len() * 2);
 	for byte in vector {
-		let _ = if upper {
-			write!(hex, "{:02X}", byte)
-		} else {
-			write!(hex, "{:02x}", byte)
-		};
+		let _ = write!(hex, "{:02x}", byte);
 	}
 	hex
 }
 
-///a crappy non-seedable PRNG based on sys time
-///
-///returns an int in the interval [`0`, `n`)
-///
-///returns `0` if the duration calculation panics
-///# Panics
-///if `n` is `0`
-fn rng(n: usize) -> usize {
-	use std::time::{SystemTime, UNIX_EPOCH};
-
-	match SystemTime::now().duration_since(UNIX_EPOCH) {
-		Ok(d) => d.as_nanos() as usize % n,
-		Err(_) => 0,
+//should we use this instead?
+///convert a byte-vector to its hex-encoded expansion (lowercase)
+pub fn u8vec_to_hex_inplace(mut vector: Vec<u8>) -> String {
+	const TABLE: &[u8; 0x10] = b"0123456789abcdef";
+	let len = vector.len();
+	vector.resize(len * 2, 0);
+	if len > 0 {
+		let mut i = len;
+		loop {
+			i -= 1;
+			//set 2nd target byte to LSBs from source byte
+			vector[i * 2 + 1] = TABLE[(vector[i] & 0xf) as usize];
+			//set 1st target byte to MSBs from source byte
+			vector[i * 2] = TABLE[(vector[i] >> 4) as usize];
+			if i == 0 {
+				break;
+			}
+		}
 	}
+	#[allow(clippy::unwrap_used)]//reason = "it's guaranteed to succeed"
+	String::from_utf8(vector).unwrap()
 }
 
-///get a pseudo-random value from an `Array`
-pub fn rand_pick<T>(a: &[T]) -> &T {
-	&a[rng(a.len())]
-}
-
-//to-do: avoid `&mut` by passing and returning `owned`
-///digests a byte-array into a vector
+///digests a byte-array into an `sbox` in-place.
 ///
-///`bytes` is the data to be hashed
+///`bytes` is the data to be hashed.
 ///
-///`sbox` is a reference to a state-box in which the hash result is XOR-ed into
+///`sbox` is a reference to a state-box in which the hash result is XOR-ed into.
 fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
 	for chunk in bytes.chunks(sbox.len()) {
 		chunk.iter().zip(&mut *sbox).for_each(|(&b, k)| *k ^= b);
 	}
 }
 
-///`xor_hasher` wrapper that takes an arbitrary `stream` to digest it into an `sbox`
+///`xor_hasher` wrapper that takes an arbitrary `stream`
 pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io::Result<()> {
 	let len = sbox.len();
 	if len == 0 {
