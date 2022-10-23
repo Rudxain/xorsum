@@ -1,5 +1,7 @@
-/*struct Hasher{};
+/*
+struct Hasher{};
 
 impl Hasher {
 	fn update(){}
-}*/
+}
+*/
