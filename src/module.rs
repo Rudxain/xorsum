@@ -151,7 +151,7 @@ mod tests {
 	use crate::module::*;
 
 	#[test]
-	fn table_cmp() {
+	fn hex_cmp() {
 		assert_eq!(u8vec_to_hex_inplace(vec![1; 1]), u8vec_to_hex_outplace(&vec![1; 1]));
 	}
 }
