@@ -99,11 +99,12 @@ pub fn rand_pick<T>(a: &[T]) -> &T {
 	&a[rng(a.len())]
 }
 
+//to-do: avoid `&mut` by passing and returning `owned`
 ///digests a byte-array into a vector
 ///
 ///`bytes` is the data to be hashed
 ///
-///`key` is a reference to a state-box in which the hash result is XOR-ed into
+///`sbox` is a reference to a state-box in which the hash result is XOR-ed into
 fn xor_hasher(bytes: &[u8], sbox: &mut [u8]) {
 	for chunk in bytes.chunks(sbox.len()) {
 		chunk.iter().zip(&mut *sbox).for_each(|(&b, k)| *k ^= b);
