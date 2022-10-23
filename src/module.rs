@@ -144,3 +144,5 @@ pub fn stream_processor(stream: impl std::io::Read, sbox: &mut [u8]) -> std::io:
 
 	Ok(())
 }
+
+mod tests {}
