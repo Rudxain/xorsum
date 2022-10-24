@@ -12,6 +12,9 @@
 	clippy::float_cmp_const
 )]
 
+///default hash/digest/output length/size in bytes
+pub const DEFAULT_LEN: usize = 8;
+
 ///Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
 ///`n` is the numerator/dividend
@@ -108,6 +111,13 @@ fn xor_hasher(bytes: &[u8], mut sbox: Vec<u8>) -> Vec<u8> {
 	}
 	sbox
 }
+
+#[cfg(test)]
+#[test]
+fn test_hasher() {
+	assert_eq!(xor_hasher(&[0], vec![0; DEFAULT_LEN]), vec![0; DEFAULT_LEN]);
+}
+
 
 ///`xor_hasher` wrapper that takes an arbitrary `stream`
 pub fn stream_processor(

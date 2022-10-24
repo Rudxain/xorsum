@@ -36,8 +36,6 @@ use crate::module::*;
 
 ///crate and program name
 const NAME: &str = "xorsum";
-///default hash/digest/output length/size in bytes
-const DEFAULT_LEN: usize = 8;
 
 #[derive(Parser)]
 #[clap(
