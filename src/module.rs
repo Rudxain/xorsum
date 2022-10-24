@@ -36,10 +36,7 @@ pub const DEFAULT_LEN: usize = 8;
 #[allow(clippy::inline_always)]
 #[inline(always)]
 const fn div_ceil(n: usize, d: usize) -> usize {
-	match (n / d, n % d) {
-		(q, 0) => q,
-		(q, _) => q + 1,
-	}
+	n / d + (if n % d == 0 { 0 } else { 1 })
 }
 
 ///Rounds `n` to nearest multiple of `d` (biased to +infinity)
@@ -118,7 +115,6 @@ fn test_hasher() {
 	assert_eq!(xor_hasher(&[0], vec![0; DEFAULT_LEN]), vec![0; DEFAULT_LEN]);
 }
 
-
 ///`xor_hasher` wrapper that takes an arbitrary `stream`
 pub fn stream_processor(
 	stream: impl std::io::Read,
@@ -167,7 +163,7 @@ mod tests {
 	use crate::module::*;
 
 	#[test]
-	#[allow(clippy::cast_possible_truncation)]//reason = "`i as u8` doesn't truncate"
+	#[allow(clippy::cast_possible_truncation)] //reason = "`i as u8` doesn't truncate"
 	fn hex_cmp() {
 		const L: usize = 0x100;
 		let mut v: Vec<u8> = vec![0; L];
