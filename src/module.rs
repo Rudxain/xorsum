@@ -70,7 +70,6 @@ pub fn u8vec_to_hex_outplace(v: &Vec<u8>) -> String {
 	hex
 }
 
-//should we use this instead?
 ///convert a byte-vector to its hex-encoded expansion (lowercase)
 pub fn u8vec_to_hex_inplace(mut v: Vec<u8>) -> String {
 	const TABLE: &[u8; 0x10] = b"0123456789abcdef";
@@ -158,6 +157,7 @@ mod tests {
 	use crate::module::*;
 
 	#[test]
+	#[allow(clippy::cast_possible_truncation)]//reason = "`i as u8` doesn't truncate"
 	fn hex_cmp() {
 		const L: usize = 0x100;
 		let mut v: Vec<u8> = vec![0; L];
