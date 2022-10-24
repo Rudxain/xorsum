@@ -61,8 +61,8 @@ struct Cli {
 
 fn main() {
 	use std::{
-		io::{stdin, stdout, stderr, Write},
-		path::Path
+		io::{stderr, stdin, stdout, Write},
+		path::Path,
 	};
 
 	let cli = Cli::parse();
@@ -93,11 +93,7 @@ fn main() {
 				match std::fs::File::open(&path) {
 					Ok(f) => sbox = stream_processor(f, sbox).unwrap(),
 					Err(e) => {
-						stderr_v
-							.write_all(
-								{ format!("{}: {}: {}\n", NAME, path.display(), e) }.as_bytes(),
-							)
-							.unwrap();
+						writeln!(stderr_v, "{}: {}: {}\n", NAME, path.display(), e).unwrap();
 						continue;
 					}
 				};
