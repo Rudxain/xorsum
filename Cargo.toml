@@ -11,7 +11,7 @@ documentation = "https://docs.rs/xorsum"
 exclude = [".*"]
 
 [dependencies]
-clap = {version = "3.2", features = ["derive"]}
+clap = { version = "3.2", features = ["derive"] }
 
 [profile.release]
 strip = true
