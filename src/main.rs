@@ -29,10 +29,6 @@
 #![forbid(unsafe_code)]
 
 use clap::Parser;
-use std::{
-	io::{stdin, stdout, Write},
-	path,
-};
 
 mod module;
 #[allow(clippy::wildcard_imports)]
@@ -60,35 +56,44 @@ struct Cli {
 
 	///Files to hash
 	#[clap(value_parser)]
-	file: Vec<path::PathBuf>,
+	file: Vec<std::path::PathBuf>,
 }
 
 fn main() {
+	use std::{
+		io::{stdin, stdout, stderr, Write},
+		path::Path
+	};
+
 	let cli = Cli::parse();
+
+	let stdin_v = stdin();
 	//to print without `lock`
 	let mut stdout_v = stdout();
+	let mut stderr_v = stderr();
 
 	//allocate once, reuse everywhere (remember to reset!)
 	let mut sbox = vec![0; cli.length]; //state box, IV = 0
 
 	if cli.file.is_empty() {
-		stream_processor(stdin(), &mut sbox).unwrap();
+		sbox = stream_processor(stdin_v, sbox).unwrap();
 		writeln!(
 			stdout_v,
 			"{}{}",
-			u8vec_to_hex_outplace(&sbox),
+			u8vec_to_hex_inplace(sbox),
 			if cli.brief { "" } else { " -" }
-		).unwrap();
+		)
+		.unwrap();
 	} else {
 		for path in cli.file {
-			if path == path::Path::new("-") {
+			if path == Path::new("-") {
 				//avoid creating multiple BRs on the same stdin (just in case)
-				stream_processor(stdin(), &mut sbox).unwrap();
+				sbox = stream_processor(stdin(), sbox).unwrap();
 			} else {
 				match std::fs::File::open(&path) {
-					Ok(f) => stream_processor(f, &mut sbox).unwrap(),
+					Ok(f) => sbox = stream_processor(f, sbox).unwrap(),
 					Err(e) => {
-						std::io::stderr()
+						stderr_v
 							.write_all(
 								{ format!("{}: {}: {}\n", NAME, path.display(), e) }.as_bytes(),
 							)
