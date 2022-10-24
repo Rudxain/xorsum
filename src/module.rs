@@ -159,7 +159,11 @@ mod tests {
 
 	#[test]
 	fn hex_cmp() {
-		let v = vec![1, 2, 3, 4, 5];
+		const L: usize = 0x100;
+		let mut v: Vec<u8> = vec![0; L];
+		for (i, b) in v.iter_mut().enumerate() {
+			*b = i as u8;
+		}
 		assert_eq!(u8vec_to_hex_inplace(v.clone()), u8vec_to_hex_outplace(&v));
 	}
 }
