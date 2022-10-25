@@ -11,7 +11,7 @@
 	clippy::decimal_literal_representation,
 	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
-	clippy::format_push_string,
+	clippy::format_push_string
 )]
 //can't `forbid`, blame `clap::Parser`
 #![deny(
