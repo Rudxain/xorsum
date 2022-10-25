@@ -12,9 +12,8 @@
 	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
 	clippy::format_push_string,
-	//clippy::arithmetic_side_effects
 )]
-//can't `forbid` anything, blame `clap::Parser`
+//can't `forbid`, blame `clap::Parser`
 #![deny(
 	clippy::mem_forget,
 	clippy::large_include_file,
