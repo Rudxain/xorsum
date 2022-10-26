@@ -6,4 +6,4 @@ When the API stabilises, we'll merge this branch into `main`, increase the Minor
 
 ## CONTRIBUTING
 
-The owner (me) has no idea what he's doing, LMAO. So please, if you have any suggestion about how to shape the API, its layout, accepted types, single-generic vs multiple-fns, etc... please let us know. We're taking some inspiration from BLAKE3, but most of its API serves an entirely different purpose (keys, HMAC, and some more crypto stuff), so doing a naive copy-paste is very unhelpful
+The owner (me) has no idea what he's doing, LMAO. So please, if you have any suggestion about how to shape the API, its layout, accepted types, single-generic vs multiple-fns, etc... please let us know. We're taking some inspiration from [BLAKE3](https://github.com/BLAKE3-team/BLAKE3/blob/master/src/lib.rs), but most of its API serves an entirely different purpose (keys, HMAC, and some more crypto stuff), so doing a naive copy-paste is very unhelpful
