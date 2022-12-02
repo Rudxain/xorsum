@@ -10,13 +10,17 @@
 
 ## Algorithm
 
-It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as the digest size (padding with 0), and `XOR`s all chunks between each other into a new chunk that's used as output.
+It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as digest size (padding with 0), and XORs all chunks between each other into a new chunk that's returned as output.
 
 This isn't a good [hash function](https://en.wikipedia.org/wiki/Hash_function). It lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), because flipping 1 input bit flips 1 output bit.
 
 ## Program
 
-The raw digest size is 64bit (8Byte) by default, but can be set to any valid `usize` value with the `--length` option. The actual size is bigger because the raw digest is expanded to hexadecimal by default. I choose 8, because CRC32 uses 4 and MD5 uses 16, and to make it easier for downgrade implementations to replicate, because 64b fits within a CPU register and can be emulated using 2 `u32`s.
+The raw digest size is 64bit by default, but can be set to any valid `usize` value with the `--length` option. The actual size is 2x bigger because of hexadecimal expansion.
+
+> Why 64b?
+
+That was a _somewhat_ arbitrary decision. I've choosen 8, because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 64b is easier to implement than 128b, when a constant size is desired, because it fits in `uint64_t`.
 
 The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
@@ -120,11 +124,11 @@ xorsum a b -l 2
 # IIRC, using primes gives you more info about the index
 ```
 
-There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are much more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs) 🤓.
+There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs) 🤓.
 
 ## Personal thoughts
 
-I was surprised that I couldn't find any implementation of a checksum algorithm completely based on the `XOR` op. So I posted this for the sake of completeness, and because I'm learning Rust. I also made this for people with low-power devices.
+I was surprised I couldn't find any implementation of a checksum algorithm completely based on`XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite using the `std` lib, and only compiling to x64 (this will _probably_ change in the future, so don't worry).
 
 ## ⚠DISCLAIMER
 
