@@ -16,11 +16,11 @@ This isn't a good [hash function](https://en.wikipedia.org/wiki/Hash_function). 
 
 ## Program
 
-The raw digest size is 64bit by default, but can be set to any valid `usize` value with the `--length` option. The actual size is 2x bigger because of hexadecimal expansion.
+The raw digest size is 8Bytes by default, but can be set to any valid `usize` value with the `--length` option. The printed size is 16B, because of hexadecimal expansion.
 
-> Why 64b?
+> Why 8B?
 
-That was a _somewhat_ arbitrary decision. I've choosen 8, because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 64b is easier to implement than 128b, when a constant size is desired, because it fits in `uint64_t`.
+That was a _somewhat_ arbitrary decision. I've choosen 8, because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 8B is easier to implement than 16B, when a constant size is desired, because it fits in `uint64_t`.
 
 The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
