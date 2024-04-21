@@ -5,7 +5,6 @@
 	clippy::unwrap_used,
 	clippy::cargo,
 	clippy::pedantic,
-	clippy::nursery,
 	clippy::shadow_unrelated,
 	clippy::string_to_string,
 	clippy::decimal_literal_representation,
@@ -28,10 +27,11 @@
 #![forbid(unsafe_code)]
 
 use clap::Parser;
+use std::path::{Path, PathBuf};
 
-mod module;
+mod utils;
 #[allow(clippy::wildcard_imports)]
-use crate::module::*;
+use crate::utils::*;
 
 /// crate and program name
 const NAME: &str = "xorsum";
@@ -53,14 +53,11 @@ struct Cli {
 
 	/// Files to hash
 	#[clap(value_parser)]
-	file: Vec<std::path::PathBuf>,
+	file: Vec<PathBuf>,
 }
 
 fn main() {
-	use std::{
-		io::{stderr, stdin, stdout, Write},
-		path::Path,
-	};
+	use std::io::{stderr, stdin, stdout, Write};
 
 	let cli = Cli::parse();
 
@@ -77,7 +74,7 @@ fn main() {
 		writeln!(
 			stdout_v,
 			"{}{}",
-			u8vec_to_hex_inplace(sbox),
+			to_hex_inplace(sbox),
 			if cli.brief { "" } else { " -" }
 		)
 		.unwrap();
@@ -96,12 +93,13 @@ fn main() {
 				};
 			}
 
-			let hex = u8vec_to_hex_outplace(&sbox);
+			let hex = to_hex_clone(&sbox);
 			if cli.brief {
-				writeln!(stdout_v, "{hex}").unwrap();
+				writeln!(stdout_v, "{hex}")
 			} else {
-				writeln!(stdout_v, "{} {}", hex, path.display()).unwrap();
+				writeln!(stdout_v, "{} {}", hex, path.display())
 			}
+			.unwrap();
 
 			sbox.fill(0); //reset (clear)
 		}

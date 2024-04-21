@@ -1,5 +1,9 @@
-#![no_std]
-/*pub use crate::module::hasher;*/
+#![cfg_attr(not(test), no_std)]
+#![allow(unused_imports)]
+pub mod utils;
+#[allow(clippy::wildcard_imports)]
+/*pub*/
+use crate::utils::hasher;
 
 struct Hasher;
 
