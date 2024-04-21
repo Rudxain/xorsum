@@ -20,42 +20,39 @@ The raw digest size is 8Bytes by default, but can be set to any valid `usize` va
 
 > Why 8B?
 
-That was a _somewhat_ arbitrary decision. I've choosen 8, because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 8B is easier to implement than 16B, when a constant size is desired, because it fits in `uint64_t`.
+That was a _somewhat_ arbitrary decision. I've choosen 8 because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 8B is easier to implement (in many langs) than 16B, when a constant fixed size is desired, because it fits in `u64`.
 
 The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
-Name and behavior are heavily influenced by [`cksum`](https://en.wikipedia.org/wiki/Cksum), [`md5sum`](https://en.wikipedia.org/wiki/Md5sum), and [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
+Name and behavior heavily influenced by
+- [uu-`hashsum`](https://github.com/uutils/coreutils/tree/main/src/uu/hashsum)
+- [`cksum`](https://en.wikipedia.org/wiki/Cksum)
+- [`md5sum`](https://en.wikipedia.org/wiki/Md5sum)
+- [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 ## Usage
-
 To install latest release from [crates.io](https://crates.io) registry:
-
 ```sh
 cargo install xorsum
 ```
-
-This isn't guaranteed to be the latest version, but it will never throw compilation errors.
+This isn't guaranteed to be the latest version, but it'll always compile.
 
 To install latest dev crate from GH:
-
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
-
-This is the **most recent** version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
+This is the **most recent** ("cutting-edge") version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
 
 To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64. These **aren't setup/installer** programs, these are the same executables `cargo` would install, so you should run them from a terminal CLI, not click them.
 
 For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903).
 
 Argument "syntax":
-
 ```sh
 xorsum [OPTIONS] [FILE]...
 ```
 
 For ℹinfo about options, run:
-
 ```sh
 xorsum --help
 ```
@@ -84,7 +81,8 @@ xorsum a --brief #`-l 8` is implicit
 #6161616100000000
 ```
 
-> Note: `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including an EOL.
+> [!note]
+> `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including an EOL.
 >
 > PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
