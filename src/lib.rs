@@ -1,13 +1,5 @@
 #![no_std]
-
-fn hash<'a, T>(inp: &'a [T], digest: &mut [T])
-where
-	T: core::ops::BitXorAssign<&'a T>,
-{
-	for (i, v) in inp.iter().enumerate() {
-		digest[i % digest.len()] ^= v;
-	}
-}
+/*pub*/use crate::module::hasher;
 
 struct Hasher;
 
