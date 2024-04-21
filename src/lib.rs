@@ -1,5 +1,5 @@
 #![no_std]
-/*pub*/use crate::module::hasher;
+/*pub use crate::module::hasher;*/
 
 struct Hasher;
 
