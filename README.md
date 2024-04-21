@@ -126,7 +126,7 @@ There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that comp
 
 ## Personal thoughts
 
-I was surprised I couldn't find any implementation of a checksum algorithm completely based on`XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite using the `std` lib, and only compiling to x64 (this will _probably_ change in the future, so don't worry).
+I was surprised I couldn't find any implementation of a checksum algorithm completely based on `XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite using the `std` lib, and only compiling to x64 (this will _probably_ change in the future, so don't worry).
 
 ## ⚠DISCLAIMER
 
