@@ -12,45 +12,49 @@
 	clippy::float_cmp_const
 )]
 
-///default hash/digest/output length/size in bytes
+/// default hash/digest/output length/size in bytes
 pub const DEFAULT_LEN: usize = 8;
+/// best buffer size for most systems
+const DEFAULT_BUF_LEN: usize = 0x10000;
 
-///Calculates the quotient of `n` and `d`, rounding towards +infinity.
+/// Calculates the quotient of `n` and `d`, rounding towards +infinity.
 ///
-///`n` is the numerator/dividend
+/// `n`: numerator/dividend
 ///
-///`d` is the denominator/divisor
+/// `d`: denominator/divisor
 ///
-///# Panics
-///If `d` is 0 (maybe also when overflow).
+/// # Panics
+/// If `d` is 0 (maybe also when overflow).
 ///
-///# Examples
-///Basic usage:
-///```
-///let a = 8;
-///let b = 3;
+/// # Examples
+/// Basic usage:
+/// ```
+/// let a = 8;
+/// let b = 3;
 ///
-///assert_eq!(div_ceil(a, b), 3);
-///assert_eq!(div_ceil(b, a), 1);
-///```
+/// assert_eq!(div_ceil(a, b), 3);
+/// assert_eq!(div_ceil(b, a), 1);
+/// ```
 #[allow(clippy::inline_always)]
 #[inline(always)]
+#[must_use]
 const fn div_ceil(n: usize, d: usize) -> usize {
 	n / d + (if n % d == 0 { 0 } else { 1 })
 }
 
-///Rounds `n` to nearest multiple of `d` (biased to +infinity)
+/// Rounds `n` to nearest multiple of `d` (biased to +infinity)
 ///
-///# Examples
-///Basic usage:
-///```
-///let a = 8;
-///let b = 3;
+/// # Examples
+/// Basic usage:
+/// ```
+/// let a = 8;
+/// let b = 3;
 ///
-///assert_eq!(next_multiple(a, b), 9);
-///assert_eq!(next_multiple(b, a), 8);
-///```
+/// assert_eq!(next_multiple(a, b), 9);
+/// assert_eq!(next_multiple(b, a), 8);
+/// ```
 #[inline]
+#[must_use]
 const fn next_multiple(n: usize, d: usize) -> usize {
 	match d {
 		0 => d,
@@ -58,8 +62,8 @@ const fn next_multiple(n: usize, d: usize) -> usize {
 	}
 }
 
-//why isn't this in `std`?
-///returns lowercase hex-encoded expansion of a byte-vector
+// why isn't this in `std`?
+/// returns lowercase hex-encoded expansion of a byte-vector
 pub fn u8vec_to_hex_outplace(v: &Vec<u8>) -> String {
 	use std::fmt::Write as _;
 
@@ -70,7 +74,7 @@ pub fn u8vec_to_hex_outplace(v: &Vec<u8>) -> String {
 	hex
 }
 
-///convert a byte-vector to its hex-encoded expansion (lowercase)
+/// convert a byte-vector to its hex-encoded expansion (lowercase)
 pub fn u8vec_to_hex_inplace(mut v: Vec<u8>) -> String {
 	const TABLE: &[u8; 0x10] = b"0123456789abcdef";
 	let len = v.len();
@@ -79,9 +83,9 @@ pub fn u8vec_to_hex_inplace(mut v: Vec<u8>) -> String {
 		let mut i = len;
 		loop {
 			i -= 1;
-			//set 2nd target byte to LSBs from source byte
+			// set 2nd target byte to LSBs from source byte
 			v[i * 2 + 1] = TABLE[(v[i] & 0xf) as usize];
-			//set 1st target byte to MSBs from source byte
+			// set 1st target byte to MSBs from source byte
 			v[i * 2] = TABLE[(v[i] >> 4) as usize];
 			if i == 0 {
 				break;
@@ -92,67 +96,62 @@ pub fn u8vec_to_hex_inplace(mut v: Vec<u8>) -> String {
 	String::from_utf8(v).unwrap()
 }
 
-///digests a byte-slice into an `sbox` "in-place", while also being "pure".
-///
-///the reason why `sbox` must be owned, is because `&mut` is a code-smell.
-///
-///the public lib will support `&mut [u8]` and `Vec<u8>` in the future (for versatility),
-///so don't worry.
-fn xor_hasher(bytes: &[u8], mut sbox: Vec<u8>) -> Vec<u8> {
+/// digests `inp` into `sbox` in-place.
+pub fn hasher<'a, T>(inp: &'a [T], sbox: &mut [T])
+where
+	T: core::ops::BitXorAssign<&'a T>,
+{
 	let len = sbox.len();
-	if len > 0 {
-		//faster than `% len` indexing, because of data-parallelism (and avoids div)
-		for chunk in bytes.chunks(len) {
-			chunk.iter().zip(&mut sbox).for_each(|(&b, k)| *k ^= b);
-		}
+	if len == 0 {
+		return;
+	};
+	// faster than `% len` indexing, because of data-parallelism (and avoids div).
+	// however, if `len` is too big, `chunk` will be allowed to be big too.
+	for chunk in inp.chunks(len) {
+		// this is correct,
+		// because the last chunk doesn't need to be isometric
+		chunk.iter().zip(&mut *sbox).for_each(|(i, s)| *s ^= i);
 	}
-	sbox
 }
 
 #[cfg(test)]
 #[test]
 fn test_hasher() {
-	assert_eq!(xor_hasher(&[0], vec![0; DEFAULT_LEN]), vec![0; DEFAULT_LEN]);
+	assert_eq!(hasher(&[0], vec![0; DEFAULT_LEN]), vec![0; DEFAULT_LEN]);
 }
 
-///`xor_hasher` wrapper that takes an arbitrary `stream`
-pub fn stream_processor(
-	stream: impl std::io::Read,
-	mut sbox: Vec<u8>,
-) -> std::io::Result<Vec<u8>> {
+/// `hasher` wrapper
+pub fn stream_processor(stream: impl std::io::Read, mut sbox: Vec<u8>) -> std::io::Result<Vec<u8>> {
 	let len = sbox.len();
-	if len > 0 {
-		/*
-		While `Stdin` just uses a `BufReader` internally, it uses the default length.
-		The problem is that the buf-len isn't guaranteed to be a multiple of `sbox.len()`,
-		which means that we can get a wrong hash, caused by over-using the lower indices.
+	if len == 0 {
+		return Ok(sbox);
+	};
+	/*
+	While `Stdin` just uses a `BufReader` internally, it uses the default length.
+	The problem is that the buf-len isn't guaranteed to be a multiple of `sbox.len()`,
+	which means that we can get a wrong hash, caused by over-using the lower indices.
 
-		To handle this, we'll create our own `BufReader` with a controlled
-		length. It will result in double-buffering stdin, but we don't know a better way than that (yet).
-		*/
-		let buf_len = {
-			///best buffer size for most systems
-			const DEFAULT_BUF_LEN: usize = 0x10000;
-			if DEFAULT_BUF_LEN > len {
-				next_multiple(DEFAULT_BUF_LEN, len)
-			} else {
-				len
-			}
-		};
+	To handle this, we'll create our own `BufReader` with a controlled
+	length. It'll result in double-buffering stdin, but we don't know a better way than that (yet).
+	*/
+	let buf_len = if DEFAULT_BUF_LEN > len {
+		next_multiple(DEFAULT_BUF_LEN, len)
+	} else {
+		len
+	};
 
-		let mut reader = std::io::BufReader::with_capacity(buf_len, stream);
-		loop {
-			use std::io::BufRead as _;
+	let mut reader = std::io::BufReader::with_capacity(buf_len, stream);
+	loop {
+		use std::io::BufRead as _;
 
-			let read_buf = reader.fill_buf()?;
-			let read_len = read_buf.len();
-			if read_len == 0 {
-				break;
-			}
-
-			sbox = xor_hasher(read_buf, sbox);
-			reader.consume(read_len);
+		let read_buf = reader.fill_buf()?;
+		let read_len = read_buf.len();
+		if read_len == 0 {
+			break;
 		}
+
+		hasher(read_buf, &mut sbox);
+		reader.consume(read_len);
 	}
 	Ok(sbox)
 }
@@ -160,10 +159,10 @@ pub fn stream_processor(
 #[cfg(test)]
 mod tests {
 	#[allow(clippy::wildcard_imports)]
-	use crate::module::*;
+	use super::*;
 
 	#[test]
-	#[allow(clippy::cast_possible_truncation)] //reason = "`i as u8` doesn't truncate"
+	#[allow(clippy::cast_possible_truncation)] // reason = "`i as u8` doesn't truncate"
 	fn hex_cmp() {
 		const L: usize = 0x100;
 		let mut v: Vec<u8> = vec![0; L];
