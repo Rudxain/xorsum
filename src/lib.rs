@@ -45,8 +45,8 @@ where
 }
 
 pub struct Hasher;
-pub impl Hasher {
+impl Hasher {
 	// for streaming support.
-	fn update(&self) {}
+	pub fn update(&self) {}
 	// wouldn't an iterator be more elegant?
 }
