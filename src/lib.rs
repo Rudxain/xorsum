@@ -1,11 +1,8 @@
 #![cfg_attr(not(test), no_std)]
-#![allow(unused_imports)]
 pub mod utils;
-#[allow(clippy::wildcard_imports)]
-/*pub*/
-use crate::utils::hasher;
+pub use crate::utils::hasher;
 
-struct Hasher;
+pub struct Hasher;
 
 impl Hasher {
 	// for streaming support.
