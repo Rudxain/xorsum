@@ -30,8 +30,7 @@ use std::path::{Path, PathBuf};
 
 mod utils;
 #[allow(clippy::wildcard_imports)]
-use crate::utils::*;
-use xorsum::hasher;
+use xorsum::{hasher, utils::*};
 
 /// crate and program name
 const NAME: &str = "xorsum";
