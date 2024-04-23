@@ -1,8 +1,7 @@
 #![warn(
-	unused,
 	future_incompatible,
 	clippy::exit,
-	clippy::unwrap_used,
+	//clippy::unwrap_used,
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::shadow_unrelated,
