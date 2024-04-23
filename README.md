@@ -124,9 +124,9 @@ xorsum a b -l 2
 
 There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that compare bytes for you, and are more efficient and user-friendly. But if you are into math puzzles, this is a good way to pass the time by solving [systems of linear modular equations](https://youtu.be/LInNgWMtFEs) 🤓.
 
-## Personal thoughts
+## 💭Thoughts
 
-I was surprised I couldn't find any implementation of a checksum algorithm completely based on `XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite using the `std` lib, and only compiling to x64 (this will _probably_ change in the future, so don't worry).
+I was surprised I couldn't find any implementation of a checksum algorithm completely based on `XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite only compiling for x64 (this will _probably_ change in the future, so don't worry).
 
 ## ⚠DISCLAIMER
 
