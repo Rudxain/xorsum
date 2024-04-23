@@ -16,7 +16,7 @@
 #[allow(unused_extern_crates)]
 extern crate std;
 use std::{string::String, vec::Vec};
-use xorsum::hasher;
+use crate::hasher;
 
 /// default hash/digest/output length/size in bytes
 pub const DEFAULT_LEN: usize = 8;
