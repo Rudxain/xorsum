@@ -27,11 +27,12 @@ jobs:
         run: cargo install clippy-sarif sarif-fmt
 
       - name: Run clippy
+        # https://stackoverflow.com/a/58859404
+        if: success() || failure()
         run:
           cargo clippy
           --all-features
           --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
-        continue-on-error: true
 
       - name: Upload analysis results to GH
         uses: github/codeql-action/upload-sarif@v3
