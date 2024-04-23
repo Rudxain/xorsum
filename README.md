@@ -28,7 +28,7 @@ Name and behavior heavily influenced by
 - [uu-`hashsum`](https://github.com/uutils/coreutils/tree/main/src/uu/hashsum)
 - [`cksum`](https://en.wikipedia.org/wiki/Cksum)
 - [`md5sum`](https://en.wikipedia.org/wiki/Md5sum)
-- [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
+- [`BLAKE3`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 ## Usage
 To install latest release from crates.io registry:
