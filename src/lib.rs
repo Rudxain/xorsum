@@ -1,7 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 mod utils;
-#[allow(clippy::wildcard_imports)]
-use crate::utils::*;
+use crate::utils::DEFAULT_BUF_LEN;
 
 /// digests `inp` into `sbox` in-place.
 pub fn hasher<'a, T>(inp: &'a [T], sbox: &mut [T])
