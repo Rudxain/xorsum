@@ -10,19 +10,19 @@
 
 ## Algorithm
 
-It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in chunks whose length is the same as digest size (padding with 0), and XORs all chunks between each other into a new chunk that's returned as output.
+It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in non-overlapping chunks (padding the remainder with `0`s), where each chunk's length equals digest size, and XORs all chunks together into an output chunk (the final digest).
 
-This isn't a good [hash function](https://en.wikipedia.org/wiki/Hash_function). It lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), because flipping 1 input bit flips 1 output bit.
+This isn't a good [HF](https://en.wikipedia.org/wiki/Hash_function). It lacks the [Avalanche Effect](https://en.wikipedia.org/wiki/Avalanche_effect), because flipping 1 input bit flips 1 output bit.
 
 ## Program
 
-The raw digest size is 8Bytes by default, but can be set to any valid `usize` value with the `--length` option. The printed size is 16B, because of hexadecimal expansion.
+The raw digest size is 8octets by default, but can be set to any valid `usize` value with the `--length` option. The printed size is 16Bytes, because of ASCII hexadecimal expansion.
 
 > Why 8B?
 
 That was a _somewhat_ arbitrary decision. I've choosen 8 because it's the geometric-mean of 4 and 16, CRC32's and MD5's digest-sizes, respectively. 8B is easier to implement (in many langs) than 16B, when a constant fixed size is desired, because it fits in `u64`.
 
-The [initialization-vector](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
+The [I.V.](https://en.wikipedia.org/wiki/Initialization_vector) is hardcoded to be 0.
 
 Name and behavior heavily influenced by
 - [uu-`hashsum`](https://github.com/uutils/coreutils/tree/main/src/uu/hashsum)
@@ -31,7 +31,7 @@ Name and behavior heavily influenced by
 - [`b3sum`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 ## Usage
-To install latest release from [crates.io](https://crates.io) registry:
+To install latest release from crates.io registry:
 ```sh
 cargo install xorsum
 ```
@@ -41,7 +41,7 @@ To install latest dev crate from GH:
 ```sh
 cargo install --git https://github.com/Rudxain/xorsum.git
 ```
-This is the **most recent** ("cutting-edge") version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
+This is the **most recent** ("cutting-edge") version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior. This one has a very unstable/experimental API (especially `lib.rs`).
 
 To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64. These **aren't setup/installer** programs, these are the same executables `cargo` would install, so you should run them from a terminal CLI, not click them.
 
@@ -130,5 +130,5 @@ I was surprised I couldn't find any implementation of a checksum algorithm compl
 
 ## ⚠DISCLAIMER
 
-0. **DO NOT SHARE HASHES OF PRIVATE DATA.** You might be leaking sensitive information. Small hashes and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to _"mix well"_.
+0. **DO NOT SHARE CHECKSUMS OF PRIVATE DATA.** You might be leaking sensitive information. Small sums and bigger files tend to be safer, because the `sbox` will (probably) have enough bytes to _"mix well"_.
 1. This program is **not production-ready**. The version should be `0.x.y` to reflect the incompleteness of the code. I'm sorry for the inconvenience and potential confusion.
