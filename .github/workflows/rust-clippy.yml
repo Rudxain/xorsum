@@ -20,19 +20,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
+      - name: Update Rust toolchain
         run: |
-          set -eu
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-          sh -s -- --default-toolchain none -y
-          rustup toolchain install stable --allow-downgrade --profile minimal --component clippy
-
-        #uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af #@v1
-        #with:
-          #profile: minimal
-          #toolchain: stable
-          #components: clippy
-          #override: true
+          #set -eu
+          #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+          #sh -s -- --default-toolchain none -y
+          rustup update #toolchain install stable --allow-downgrade --profile minimal --component clippy
 
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt
