@@ -28,7 +28,7 @@ jobs:
 
       - name: Run clippy
         # https://stackoverflow.com/a/58859404
-        if: success() || failure()
+        if: always()
         run:
           cargo clippy
           --all-features
