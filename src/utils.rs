@@ -1,3 +1,5 @@
+// https://github.com/rust-lang/rust/issues/124315
+
 #![deny(clippy::unwrap_used, clippy::print_stdout, clippy::print_stderr)]
 #![forbid(
 	clippy::exit,
@@ -23,6 +25,7 @@ pub const DEFAULT_BUF_LEN: usize = 0x10000;
 
 // why isn't this in `std`?
 /// returns lowercase hex-encoded expansion of its arg
+#[allow(dead_code)]
 pub fn to_hex_clone(vec: &[u8]) -> String {
 	use std::fmt::Write as _;
 
@@ -34,6 +37,7 @@ pub fn to_hex_clone(vec: &[u8]) -> String {
 }
 
 /// convert arg to its lowercase hex-encoded expansion
+#[allow(dead_code)]
 pub fn to_hex_inplace(mut v: Vec<u8>) -> String {
 	const TABLE: [u8; 0x10] = *b"0123456789abcdef";
 
@@ -59,6 +63,7 @@ pub fn to_hex_inplace(mut v: Vec<u8>) -> String {
 }
 
 /// `hasher` wrapper
+#[allow(dead_code)]
 pub fn stream_processor(stream: impl io::Read, sbox: &mut [u8]) -> io::Result<()> {
 	use io::BufRead as _;
 
