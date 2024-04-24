@@ -1,46 +1,26 @@
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 #![cfg_attr(not(test), no_std)]
-mod utils;
-use utils::DEFAULT_BUF_LEN;
 
-/// digests `inp` into `sbox` in-place.
-pub fn hasher<'a, T>(inp: &'a [T], sbox: &mut [T])
+/// sums `inp` into `sbox` in-place.
+pub fn digestor<'a, T, I>(inp: I, sbox: &mut [T])
 where
-	T: core::ops::BitXorAssign<&'a T>,
-{
-	let len = sbox.len();
-	if len == 0 {
-		return;
-	};
-	// faster than `% len` indexing, because of data-parallelism (and avoids div).
-	// however, if `len` is too big, `chunk` will be allowed to be big too.
-	for chunk in inp.chunks(len) {
-		// last chunk doesn't have to be isometric
-		chunk.iter().zip(&mut *sbox).for_each(|(i, s)| *s ^= i);
-	}
-}
-
-/// digests `inp` into `sbox` in-place.
-pub fn hasher_alt<'a, T>(inp: &'a [T], sbox: &mut [T])
-where
-	T: core::ops::BitXorAssign<&'a T>,
+	I: IntoIterator<Item = &'a T>,
+	T: core::ops::BitXorAssign<&'a T> + 'a,
 {
 	if sbox.is_empty() {
 		return;
 	};
 	let mut i: usize = 0;
-	// do we really need chunked iter?
-	for chunk in inp.chunks(DEFAULT_BUF_LEN) {
-		for b in chunk {
-			sbox[i] ^= b;
+	for b in inp {
+		sbox[i] ^= b;
 
-			// rustc should easily optimize this
-			//i = (i + 1) % sbox.len()
-			i += 1;
-			if i >= sbox.len() {
-				i = 0;
-			};
-		}
+		// rustc should easily optimize this
+		//i = (i + 1) % sbox.len()
+		i += 1;
+		// is this branch worse than `%`?
+		if i >= sbox.len() {
+			i = 0;
+		};
 	}
 }
 

@@ -33,7 +33,6 @@ use std::path::{Path, PathBuf};
 mod utils;
 #[allow(clippy::wildcard_imports)]
 use utils::*;
-use xorsum::hasher;
 
 /// default hash/digest/output length/size in bytes
 const DEFAULT_LEN: usize = 8;

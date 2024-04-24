@@ -17,8 +17,8 @@
 // https://github.com/rust-lang/rust/issues/53964
 #[allow(unused_extern_crates)]
 extern crate std;
-use crate::hasher;
 use std::{io, string::String, vec::Vec};
+use xorsum::digestor;
 
 /// best buffer size for most systems
 pub const DEFAULT_BUF_LEN: usize = 0x10000;
@@ -95,7 +95,7 @@ pub fn stream_processor(stream: impl io::Read, sbox: &mut [u8]) -> io::Result<()
 		// if sbox isn't `Copy`, then why does this compile?
 		// it should move into `hasher`, requiring a fresh reborrow:
 		// `&mut *sbox`
-		hasher(read_buf, sbox);
+		digestor(read_buf, sbox);
 		reader.consume(read_len);
 	}
 	Ok(())
@@ -110,7 +110,7 @@ mod tests {
 	fn test_hasher() {
 		let zero = [0; 4];
 		let mut hash = zero;
-		hasher(&[0], &mut hash);
+		digestor(&[0], &mut hash);
 		assert_eq!(hash, zero);
 	}
 
