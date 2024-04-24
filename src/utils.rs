@@ -1,4 +1,4 @@
-#![deny(clippy::unwrap_used)]
+#![deny(clippy::unwrap_used, clippy::print_stdout, clippy::print_stderr)]
 #![forbid(
 	clippy::exit,
 	clippy::mem_forget,
@@ -15,22 +15,20 @@
 // https://github.com/rust-lang/rust/issues/53964
 #[allow(unused_extern_crates)]
 extern crate std;
-use std::{string::String, vec::Vec};
 use crate::hasher;
+use std::{io, string::String, vec::Vec};
 
-/// default hash/digest/output length/size in bytes
-pub const DEFAULT_LEN: usize = 8;
 /// best buffer size for most systems
 pub const DEFAULT_BUF_LEN: usize = 0x10000;
 
 // why isn't this in `std`?
 /// returns lowercase hex-encoded expansion of its arg
-pub fn to_hex_clone(v: &[u8]) -> String {
+pub fn to_hex_clone(vec: &[u8]) -> String {
 	use std::fmt::Write as _;
 
-	let mut hex = String::with_capacity(v.len() * 2);
-	for byte in v {
-		let _ = write!(hex, "{byte:02x}");
+	let mut hex = String::with_capacity(vec.len() * 2);
+	for b in vec {
+		let _ = write!(hex, "{b:02x}");
 	}
 	hex
 }
@@ -38,6 +36,7 @@ pub fn to_hex_clone(v: &[u8]) -> String {
 /// convert arg to its lowercase hex-encoded expansion
 pub fn to_hex_inplace(mut v: Vec<u8>) -> String {
 	const TABLE: [u8; 0x10] = *b"0123456789abcdef";
+
 	let len = v.len();
 	v.resize(len * 2, 0);
 	if len > 0 {
@@ -60,46 +59,41 @@ pub fn to_hex_inplace(mut v: Vec<u8>) -> String {
 }
 
 /// `hasher` wrapper
-pub fn stream_processor(
-	stream: impl std::io::Read,
-	mut sbox: Vec<u8>,
-) -> std::io::Result<Vec<u8>> {
+pub fn stream_processor(stream: impl io::Read, sbox: &mut [u8]) -> io::Result<()> {
+	use io::BufRead as _;
+
 	let len = sbox.len();
 	if len == 0 {
-		return Ok(sbox);
+		return Ok(());
 	};
 	/*
-	While `Stdin` just uses a `BufReader` internally, it uses the default length.
-	The problem is that the buf-len isn't guaranteed to be a multiple of `sbox.len()`,
-	which means that we can get a wrong hash, caused by over-using the lower indices.
+	`stream` `buf.len()` isn't guaranteed to be a multiple of `sbox.len()`,
+	so might get a wrong hash, caused by over-using the lower indices.
 
-	To handle this, we'll create our own `BufReader` with a controlled
-	length. It'll result in double-buffering stdin, but we don't know a better way than that (yet).
+	That's why we create our own `BufReader` with a controlled
+	len. It'll result in double-buffering.
 	*/
 	let buf_len = if DEFAULT_BUF_LEN > len {
 		DEFAULT_BUF_LEN.next_multiple_of(len)
 	} else {
 		len
 	};
-	/*
-	What we should be doing instead of double-buffer,
-	is to define a hasher that can be started at a non-zero index.
-	That way, we can control exactly where the XORed bytes are placed in the digest.
-	*/
-	let mut reader = std::io::BufReader::with_capacity(buf_len, stream);
+	// We should define a `hasher` that can start at non-zero index.
+	// That way, we can control exactly where the XORed bytes are placed in the digest.
+	let mut reader = io::BufReader::with_capacity(buf_len, stream);
 	loop {
-		use std::io::BufRead as _;
-
 		let read_buf = reader.fill_buf()?;
 		let read_len = read_buf.len();
 		if read_len == 0 {
 			break;
 		}
-
-		hasher(read_buf, &mut sbox);
+		// if sbox isn't `Copy`, then why does this compile?
+		// it should move into `hasher`, requiring a fresh reborrow:
+		// `&mut *sbox`
+		hasher(read_buf, sbox);
 		reader.consume(read_len);
 	}
-	Ok(sbox)
+	Ok(())
 }
 
 #[cfg(test)]
@@ -109,7 +103,7 @@ mod tests {
 
 	#[test]
 	fn test_hasher() {
-		let zero = [0; DEFAULT_LEN];
+		let zero = [0; 4];
 		let mut hash = zero;
 		hasher(&[0], &mut hash);
 		assert_eq!(hash, zero);

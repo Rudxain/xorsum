@@ -1,7 +1,9 @@
 #![warn(
 	future_incompatible,
 	clippy::exit,
-	//clippy::unwrap_used,
+	clippy::unwrap_used,
+	clippy::print_stdout,
+	clippy::print_stderr,
 	clippy::cargo,
 	clippy::pedantic,
 	clippy::shadow_unrelated,
@@ -33,6 +35,9 @@ mod utils;
 use utils::*;
 use xorsum::hasher;
 
+/// default hash/digest/output length/size in bytes
+const DEFAULT_LEN: usize = 8;
+
 /// crate and program name
 const NAME: &str = "xorsum";
 
@@ -43,7 +48,7 @@ const NAME: &str = "xorsum";
 	long_about = "If no FILES are given, or if FILE is \"-\", reads Standard Input"
 )]
 struct Cli {
-	/// Digest size in bytes (prior to hex-encoding)
+	/// Digest size in octets (prior to hex-encoding)
 	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
@@ -56,38 +61,38 @@ struct Cli {
 	file: Vec<PathBuf>,
 }
 
-fn main() {
-	use std::io::{stderr, stdin, stdout, Write};
+#[allow(clippy::type_complexity)]
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+	use std::{io, io::Write};
 
 	let cli = Cli::parse();
 
-	let stdin_v = stdin();
+	let stdin_v = io::stdin();
 	// to print without `lock`
-	let mut stdout_v = stdout();
-	let mut stderr_v = stderr();
+	let mut stdout_v = io::stdout();
+	let mut stderr_v = io::stderr();
 
 	// allocate once, reuse everywhere (remember to reset!)
 	let mut sbox = vec![0; cli.length]; // state box, IV = 0
 
 	if cli.file.is_empty() {
-		sbox = stream_processor(stdin_v, sbox).unwrap();
+		stream_processor(stdin_v, &mut sbox)?;
 		writeln!(
 			stdout_v,
 			"{}{}",
 			to_hex_inplace(sbox),
 			if cli.brief { "" } else { " -" }
-		)
-		.unwrap();
+		)?;
 	} else {
 		for path in cli.file {
 			if path == Path::new("-") {
-				// avoid creating multiple BRs on the same stdin (just in case)
-				sbox = stream_processor(stdin(), sbox).unwrap();
+				// it seems multiple BRs are fine if not simultaneous
+				stream_processor(io::stdin(), &mut sbox)?;
 			} else {
 				match std::fs::File::open(&path) {
-					Ok(f) => sbox = stream_processor(f, sbox).unwrap(),
+					Ok(f) => stream_processor(f, &mut sbox)?,
 					Err(e) => {
-						writeln!(stderr_v, "{}: {}: {}\n", NAME, path.display(), e).unwrap();
+						writeln!(stderr_v, "{NAME}: {}: {e}", path.display())?;
 						continue;
 					}
 				};
@@ -97,11 +102,11 @@ fn main() {
 			if cli.brief {
 				writeln!(stdout_v, "{hex}")
 			} else {
-				writeln!(stdout_v, "{} {}", hex, path.display())
-			}
-			.unwrap();
-
+				writeln!(stdout_v, "{hex} {}", path.display())
+			}?;
+			// this is not needed in the last iter
 			sbox.fill(0); //reset (clear)
 		}
 	}
+	Ok(())
 }

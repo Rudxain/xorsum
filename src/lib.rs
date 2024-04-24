@@ -1,6 +1,7 @@
+#![deny(clippy::print_stdout, clippy::print_stderr)]
 #![cfg_attr(not(test), no_std)]
 mod utils;
-use crate::utils::DEFAULT_BUF_LEN;
+use utils::DEFAULT_BUF_LEN;
 
 /// digests `inp` into `sbox` in-place.
 pub fn hasher<'a, T>(inp: &'a [T], sbox: &mut [T])
@@ -14,8 +15,7 @@ where
 	// faster than `% len` indexing, because of data-parallelism (and avoids div).
 	// however, if `len` is too big, `chunk` will be allowed to be big too.
 	for chunk in inp.chunks(len) {
-		// this is correct,
-		// because the last chunk doesn't need to be isometric
+		// last chunk doesn't have to be isometric
 		chunk.iter().zip(&mut *sbox).for_each(|(i, s)| *s ^= i);
 	}
 }
