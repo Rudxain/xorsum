@@ -30,9 +30,7 @@ jobs:
         run: |
           #!/bin/bash
           set -euf
-          cargo clippy
-          --all-features
-          --message-format=json | \
+          cargo clippy --all-features --message-format=json | \
             clippy-sarif | \
             tee rust-clippy-results.sarif | \
             sarif-fmt
