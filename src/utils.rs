@@ -1,5 +1,3 @@
-// https://github.com/rust-lang/rust/issues/124315
-
 #![deny(clippy::unwrap_used, clippy::print_stdout, clippy::print_stderr)]
 #![forbid(
 	clippy::exit,
@@ -14,105 +12,82 @@
 	clippy::float_cmp_const
 )]
 
-// https://github.com/rust-lang/rust/issues/53964
-#[allow(unused_extern_crates)]
-extern crate std;
-use std::{io, string::String, vec::Vec};
-use xorsum::digestor;
+use std::io;
 
-/// best buffer size for most systems
-pub const DEFAULT_BUF_LEN: usize = 0x10000;
+/// best buffer capacity for most 64bit systems
+pub const BUF_CAP: usize = 0x10000;
 
 // why isn't this in `std`?
 /// returns lowercase hex-encoded expansion of its arg
-#[allow(dead_code)]
 pub fn to_hex_clone(vec: &[u8]) -> String {
 	use std::fmt::Write as _;
 
 	let mut hex = String::with_capacity(vec.len() * 2);
 	for b in vec {
-		let _ = write!(hex, "{b:02x}");
+		match write!(hex, "{b:02x}") {
+			Ok(()) => (),
+			_ => unreachable!("each hex-pair must be valid UTF-8"),
+		};
 	}
 	hex
 }
 
 /// convert arg to its lowercase hex-encoded expansion
-#[allow(dead_code)]
 pub fn to_hex_inplace(mut v: Vec<u8>) -> String {
 	const TABLE: [u8; 0x10] = *b"0123456789abcdef";
 
 	let len = v.len();
 	v.resize(len * 2, 0);
-	if len > 0 {
-		let mut i = len;
-		loop {
-			i -= 1;
-			// set 2nd target byte to LSBs from source byte
-			v[i * 2 + 1] = TABLE[(v[i] & 0xf) as usize];
-			// set 1st target byte to MSBs from source byte
-			v[i * 2] = TABLE[(v[i] >> 4) as usize];
-			if i == 0 {
-				break;
-			}
-		}
+
+	for i in (0..len).rev() {
+		// set 2nd target byte to LSBs from source byte
+		v[i * 2 + 1] = TABLE[(v[i] & 0xf) as usize];
+		// set 1st target byte to MSBs from source byte
+		v[i * 2] = TABLE[(v[i] >> 4) as usize];
 	}
+
 	match String::from_utf8(v) {
 		Ok(s) => s,
-		_ => unreachable!("String must be valid UTF-8"),
+		_ => unreachable!("hex `String` must be valid UTF-8"),
 	}
 }
 
-/// `hasher` wrapper
-#[allow(dead_code)]
-pub fn stream_processor(stream: impl io::Read, sbox: &mut [u8]) -> io::Result<()> {
+/// sums `stream` into `sbox` in-place.
+/// if passing `stdin` as `stream`, it'll be double-buffered.
+pub fn stream_digestor<T: io::Read>(stream: T, sbox: &mut [u8]) -> io::Result<()> {
 	use io::BufRead as _;
 
-	let len = sbox.len();
-	if len == 0 {
+	if sbox.is_empty() {
 		return Ok(());
 	};
-	/*
-	`stream` `buf.len()` isn't guaranteed to be a multiple of `sbox.len()`,
-	so might get a wrong hash, caused by over-using the lower indices.
+	let mut i: usize = 0;
 
-	That's why we create our own `BufReader` with a controlled
-	len. It'll result in double-buffering.
-	*/
-	let buf_len = if DEFAULT_BUF_LEN > len {
-		DEFAULT_BUF_LEN.next_multiple_of(len)
-	} else {
-		len
-	};
-	// We should define a `hasher` that can start at non-zero index.
-	// That way, we can control exactly where the XORed bytes are placed in the digest.
-	let mut reader = io::BufReader::with_capacity(buf_len, stream);
+	// `main` should pre-alloc this.
+	// this is inefficient.
+	let mut reader = io::BufReader::with_capacity(BUF_CAP, stream);
 	loop {
-		let read_buf = reader.fill_buf()?;
-		let read_len = read_buf.len();
-		if read_len == 0 {
+		let buf = reader.fill_buf()?;
+		if buf.is_empty() {
 			break;
 		}
-		// if sbox isn't `Copy`, then why does this compile?
-		// it should move into `hasher`, requiring a fresh reborrow:
-		// `&mut *sbox`
-		digestor(read_buf, sbox);
-		reader.consume(read_len);
+		for b in buf {
+			sbox[i] ^= b;
+			i += 1;
+			if i >= sbox.len() {
+				i = 0;
+			}
+		}
+		// inlining it makes the compiler complain,
+		// for some reason...
+		let buf_len = buf.len();
+		reader.consume(buf_len);
 	}
 	Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-	#[allow(clippy::wildcard_imports)]
 	use super::*;
-
-	#[test]
-	fn test_hasher() {
-		let zero = [0; 4];
-		let mut hash = zero;
-		digestor(&[0], &mut hash);
-		assert_eq!(hash, zero);
-	}
 
 	#[test]
 	#[allow(clippy::cast_possible_truncation)]

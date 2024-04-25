@@ -27,7 +27,6 @@
 )]
 #![forbid(unsafe_code)]
 
-use clap::Parser;
 use std::path::{Path, PathBuf};
 
 mod utils;
@@ -40,6 +39,7 @@ const DEFAULT_LEN: usize = 8;
 /// crate and program name
 const NAME: &str = "xorsum";
 
+use clap::Parser;
 #[derive(Parser)]
 #[clap(
 	version,
@@ -51,11 +51,11 @@ struct Cli {
 	#[clap(short, long, default_value_t = DEFAULT_LEN, value_parser)]
 	length: usize,
 
-	/// Only print hash, no filenames
+	/// Only print digest, no filenames
 	#[clap(short, long, action)]
 	brief: bool,
 
-	/// Files to hash
+	/// Files to digest
 	#[clap(value_parser)]
 	file: Vec<PathBuf>,
 }
@@ -67,7 +67,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let cli = Cli::parse();
 
 	let stdin_v = io::stdin();
-	// to print without `lock`
+	// print without `lock`
 	let mut stdout_v = io::stdout();
 	let mut stderr_v = io::stderr();
 
@@ -75,7 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let mut sbox = vec![0; cli.length]; // state box, IV = 0
 
 	if cli.file.is_empty() {
-		stream_processor(stdin_v, &mut sbox)?;
+		stream_digestor(stdin_v, &mut sbox)?;
 		writeln!(
 			stdout_v,
 			"{}{}",
@@ -84,12 +84,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		)?;
 	} else {
 		for path in cli.file {
+			debug_assert_eq!(sbox, vec![0; cli.length]);
+
 			if path == Path::new("-") {
 				// it seems multiple BRs are fine if not simultaneous
-				stream_processor(io::stdin(), &mut sbox)?;
+				stream_digestor(io::stdin(), &mut sbox)?;
 			} else {
 				match std::fs::File::open(&path) {
-					Ok(f) => stream_processor(f, &mut sbox)?,
+					Ok(f) => stream_digestor(f, &mut sbox)?,
 					Err(e) => {
 						writeln!(stderr_v, "{NAME}: {}: {e}", path.display())?;
 						continue;
