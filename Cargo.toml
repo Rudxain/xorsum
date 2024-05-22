@@ -14,7 +14,6 @@ exclude = [".*", "*CONTRIBUTING*"]
 clap = { version = "4.0", features = ["derive"] }
 
 [profile.release]
-opt-level = 3     # should we use "s"?
 strip = true
 lto = true
 codegen-units = 1
