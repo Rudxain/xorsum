@@ -1,13 +1,5 @@
 # xorsum
 
-<div align=center>
-  <img
-    alt="XOR symbol at upper-left corner, plus-sign at bottom-right corner"
-    src=icon.svg
-    width=50% height=50%
-  >
-</div>
-
 ## Algorithm
 
 It uses the [XOR-cipher](https://en.wikipedia.org/wiki/XOR_cipher) to compute a [checksum](https://en.wikipedia.org/wiki/Checksum) digest. Basically, it splits the data in non-overlapping chunks (padding the remainder with `0`s), where each chunk's length equals digest size, and XORs all chunks together into an output chunk (the final digest).
@@ -31,19 +23,27 @@ Name and behavior heavily influenced by
 - [`BLAKE3`](https://github.com/BLAKE3-team/BLAKE3/tree/master/b3sum).
 
 ## Usage
-To install latest release from crates.io registry:
+To install latest release from `crates.io` registry:
 ```sh
-cargo install xorsum
+cargo install xorsum \
+	--config 'build.rustflags="-C target-cpu=native"'
 ```
 This isn't guaranteed to be the latest version, but it'll always compile.
 
 To install latest dev crate from GH:
 ```sh
-cargo install --git https://github.com/Rudxain/xorsum.git
+git clone --depth=1 https://github.com/Rudxain/xorsum && \
+cd xorsum && \
+cargo install --path . \
+	--config 'build.rustflags="-C target-cpu=native"'
 ```
-This is the **most recent** ("cutting-edge") version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior. This one has a very unstable/experimental API (especially `lib.rs`).
+This is the **most recent** ("cutting-edge") version. Compilation isn't guaranteed. Semver may be broken. And `--help` may not reflect actual program behavior.
 
-To get already-compiled non-dev executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases). `*.elf`s will only be compatible with GNU-Linux x64. `*.exe`s will only be compatible with Windows x64. These **aren't setup/installer** programs, these are the same executables `cargo` would install, so you should run them from a terminal CLI, not click them.
+To get compiled non-dev "portable" executables, go to [GH releases](https://github.com/Rudxain/xorsum/releases), or use [`binstall`](https://github.com/cargo-bins/cargo-binstall):
+```sh
+cargo binstall xorsum
+```
+Artifacts are only compatible with GNU-Linux x64. There are no `*.exe`s because I won't support [M$](https://consumerrights.wiki/Microsoft) or [RottenCore](https://stallman.org/apple)/["Apple"](https://consumerrights.wiki/Apple).
 
 For a Llamalab Automate implementation, visit [XOR hasher](https://llamalab.com/automate/community/flows/42903).
 
@@ -63,7 +63,7 @@ xorsum --help
 
 ```sh
 # let's create an empty file named "a"
-echo -n > a
+touch a
 xorsum --length 4 a
 # output will be "00000000 a" (without quotes)
 
@@ -83,12 +83,10 @@ xorsum a --brief #`-l 8` is implicit
 
 > [!note]
 > `echo -n` has [different behavior depending on OS and binary version](https://unix.stackexchange.com/a/65819), it might include line endings like `\n` (LF) or `\r\n` (CR-LF). The outputs shown in the example are the (usually desired) result of **NOT** including an EOL.
->
-> PowerShell will ignore `-n` because `echo` is an alias of [`Write-Output`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-output) and therefore can't recognize `-n`. [`Write-Host -NoNewline`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-host?view=powershell-7.2#example-1-write-to-the-console-without-adding-a-new-line) can't be piped nor redirected, so it's not a good alternative.
 
 ### Emulating 🏔AE
 
-`--length` **doesn't truncate** the output:
+`--length` **doesn't truncate** the output (unlike `b3sum`):
 
 ```sh
 xorsum some_big_file -bl 3 #"00ff55"
@@ -126,7 +124,7 @@ There are programs (like [`diff`](https://en.wikipedia.org/wiki/Diff)) that comp
 
 ## 💭Thoughts
 
-I was surprised I couldn't find any implementation of a checksum algorithm completely based on `XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite only compiling for x64 (this will _probably_ change in the future, so don't worry).
+I was surprised I couldn't find any implementation of a checksum algorithm completely based on `XOR`, so I posted this for the sake of completeness, and because I'm learning Rust. I also made this for low-power devices, despite only releasing for x64.
 
 ## ⚠DISCLAIMER
 
